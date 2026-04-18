@@ -7,7 +7,7 @@ class PopOutBoard:
         # 0 = vazio, 1 = X (Jogador 1), 2 = O (IA)
         self.board = [[0 for _ in range(self.cols)] for _ in range(self.rows)]
         self.current_player = 1 # Começamos com 1 (X)
-        self.state_history = {}
+        self.last_move = None 
 
     def display(self):
         print("\n  0   1   2   3   4   5   6")
@@ -55,10 +55,11 @@ class PopOutBoard:
                 new_state.board[r][col] = new_state.board[r - 1][col]
             new_state.board[0][col] = 0
 
+        new_state.last_move = move
         # Alternar jogador: se era 1 vira 2, se era 2 vira 1
         new_state.current_player = 3 - self.current_player 
         return new_state
-
+    
     def check_four_in_a_row(self, p_value):
         # p_value deve ser 1 ou 2
         # (A tua lógica de check_four_in_a_row está correta, 
@@ -76,17 +77,33 @@ class PopOutBoard:
             for r in range(self.rows - 3):
                 if all(self.board[r+i][c+i] == p_value for i in range(4)): return True
         return False
+        
+        
+    def get_winner(self):
+        p1_win = self.check_four_in_a_row(1)
+        p2_win = self.check_four_in_a_row(2)
+        
+        if self.last_move and self.last_move[1] == 'pop':
+            if p1_win and p2_win:
+                # Quem fez o pop é o adversário do current_player
+                return 3 - self.current_player
+
+        if p1_win:
+            return 1
+        if p2_win:
+            return 2
+        return None
 
     def is_terminal(self):
-        if self.check_four_in_a_row(1) or self.check_four_in_a_row(2):
+        if self.get_winner() is not None:
             return True
         return len(self.get_legal_moves()) == 0
 
     def get_result(self, player):
-        # player = jogador para quem estamos a avaliar (1 ou 2)
-        if self.check_four_in_a_row(player):
-            return 1
-        elif self.check_four_in_a_row(3 - player):
-            return -1
-        else:
+        winner = self.get_winner()
+        if winner is None:
             return 0
+        if winner == player:
+            return 1
+        else:
+            return -1

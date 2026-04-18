@@ -35,7 +35,29 @@ def run_terminal():
     while not board.is_terminal():
         board.display()
 
-        # definir se é humano
+        # --- Verificar se o tabuleiro está cheio e sem vencedor ---
+        winner = board.get_winner()
+        if winner is None:
+            # Verifica se todas as células estão ocupadas (tabuleiro cheio)
+            tabuleiro_cheio = all(all(cell != 0 for cell in row) for row in board.board)
+            if tabuleiro_cheio:
+                print("O tabuleiro está completamente cheio!")
+                # O jogador atual decide: pop ou empate?
+                # Só pode escolher pop se houver pelo menos um pop legal
+                pops_disponiveis = any(board.is_valid_move(c, 'pop') for c in range(board.cols))
+                if pops_disponiveis:
+                    escolha = input("Deseja fazer um pop (p) ou terminar o jogo com empate (e)? ").strip().lower()
+                    if escolha == 'e':
+                        print("Jogo terminado por empate (opção do jogador).")
+                        return  # Sai da função, terminando o jogo
+                    # Se escolheu 'p', continua normalmente para pedir o movimento
+                else:
+                    # Se não houver pops possíveis (caso raro), o jogo empata automaticamente
+                    print("Não há pops possíveis. O jogo termina empatado.")
+                    return
+        # --- Fim da verificação de tabuleiro cheio ---
+
+        # determinar se é humano a jogar
         if mode == 1:
             is_human = board.current_player == 1
         elif mode == 2:
@@ -50,20 +72,17 @@ def run_terminal():
             print(f"IA ({board.current_player})...")
             node = mcts(board, iterations=300)
             move = node.move
-
-            # guardar no dataset (antes de aplicar a jogada)
             save_example(board, move)
-
             print("IA jogou:", move)
 
         board = board.apply_move(move)
 
-    # resultado final
+    # Após o loop, mostrar o resultado usando get_winner()
     board.display()
-
-    if board.check_four_in_a_row(1):
+    winner = board.get_winner()
+    if winner == 1:
         print("Jogador 1 venceu!")
-    elif board.check_four_in_a_row(2):
+    elif winner == 2:
         print("Jogador 2 venceu!")
     else:
-        print("Empate!")
+        print("Empate!") 
