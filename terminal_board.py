@@ -2,29 +2,40 @@ from moves import PopOutBoard
 from mcts4 import mcts
 from dataset import save_example
 
-
 def get_move(board):
+    # Verifica se o tabuleiro está cheio (nenhuma célula com 0 na linha do topo)
+    tabuleiro_cheio = all(board.board[0][c] != 0 for c in range(board.cols))
+    
     while True:
         try:
-            col = int(input("Coluna (0-6): "))
-            move_type = input("d = drop | p = pop: ").strip().lower()
+            col_input = input("Coluna (0-6): ").strip()
+            if not col_input: continue
+            col = int(col_input)
 
-            if move_type == 'd':
-                move_type = 'drop'
-            elif move_type == 'p':
+            if tabuleiro_cheio:
+                # Se está cheio, ignoramos a pergunta do tipo e forçamos 'pop'
                 move_type = 'pop'
+                print(f"Tabuleiro cheio: A assumir 'pop' na coluna {col}...")
             else:
-                print("Tipo inválido!")
-                continue
+                # Se NÃO está cheio, pergunta normalmente
+                tipo = input("d = drop | p = pop: ").strip().lower()
+                if tipo == 'd':
+                    move_type = 'drop'
+                elif tipo == 'p':
+                    move_type = 'pop'
+                else:
+                    print("Tipo inválido! Escolha 'd' ou 'p'.")
+                    continue
 
+            # Validar a jogada no motor do jogo
             if board.is_valid_move(col, move_type):
                 return (col, move_type)
             else:
-                print("Jogada inválida!")
+                motivo = "não tens uma peça tua na base" if move_type == 'pop' else "coluna cheia"
+                print(f"Jogada inválida ({motivo}). Tenta outra vez.")
 
-        except:
-            print("Erro no input!")
-
+        except ValueError:
+            print("Erro: Insere um número válido para a coluna (0-6).")
 
 def run_terminal():
     board = PopOutBoard()
@@ -38,22 +49,25 @@ def run_terminal():
         # --- Verificar se o tabuleiro está cheio e sem vencedor ---
         winner = board.get_winner()
         if winner is None:
-            # Verifica se todas as células estão ocupadas (tabuleiro cheio)
             tabuleiro_cheio = all(all(cell != 0 for cell in row) for row in board.board)
             if tabuleiro_cheio:
-                print("O tabuleiro está completamente cheio!")
-                # O jogador atual decide: pop ou empate?
-                # Só pode escolher pop se houver pelo menos um pop legal
-                pops_disponiveis = any(board.is_valid_move(c, 'pop') for c in range(board.cols))
-                if pops_disponiveis:
-                    escolha = input("Deseja fazer um pop (p) ou terminar o jogo com empate (e)? ").strip().lower()
+                print("\n--- O TABULEIRO ESTÁ COMPLETAMENTE CHEIO! ---")
+                
+                # 1. Calcular quais colunas permitem 'pop' para o jogador atual
+                colunas_validas = [c for c in range(board.cols) if board.is_valid_move(c, 'pop')]
+                
+                if colunas_validas:
+                    # 2. Mostrar as opções ao jogador
+                    print(f"Podes fazer 'pop' nas colunas: {colunas_validas}")
+                    
+                    escolha = input("Deseja fazer um pop (p) ou terminar o jogo com empate (e)? Resposta: ").strip().lower()
                     if escolha == 'e':
                         print("Jogo terminado por empate (opção do jogador).")
-                        return  # Sai da função, terminando o jogo
-                    # Se escolheu 'p', continua normalmente para pedir o movimento
+                        return
+                    
+                    # Se ele escolheu 'p', o código continua e vai chamar o get_move(board) abaixo
                 else:
-                    # Se não houver pops possíveis (caso raro), o jogo empata automaticamente
-                    print("Não há pops possíveis. O jogo termina empatado.")
+                    print("Não tens peças na linha de base para retirar. O jogo termina empatado.")
                     return
         # --- Fim da verificação de tabuleiro cheio ---
 
@@ -81,8 +95,8 @@ def run_terminal():
     board.display()
     winner = board.get_winner()
     if winner == 1:
-        print("Jogador 1 venceu!")
+        print("🎉 JOGADOR 1 (X) VENCEU!")
     elif winner == 2:
-        print("Jogador 2 venceu!")
+        print("🎉 JOGADOR 2 (O) VENCEU!")
     else:
-        print("Empate!") 
+        print("🤝 EMPATE!")

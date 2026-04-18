@@ -21,7 +21,11 @@ class PopOutBoard:
                 row_str += f" {char} |"
             print(row_str)
             print("+---" * self.cols + "+")
-        print(f"Vez do Jogador: {'X' if self.current_player == 1 else 'O'}\n")
+        if self.get_winner() is None:
+            print(f"Vez do Jogador: {'X' if self.current_player == 1 else 'O'}\n")
+        else:
+            # Se houver um vencedor ou empate, não mostra a vez
+            print("FIM DE JOGO\n")
         
     def is_valid_move(self, col, move_type):
         if col < 0 or col >= self.cols: return False
@@ -70,12 +74,12 @@ class PopOutBoard:
         for c in range(self.cols):
             for r in range(self.rows - 3):
                 if all(self.board[r+i][c] == p_value for i in range(4)): return True
-        for c in range(self.cols - 3):
-            for r in range(3, self.rows):
-                if all(self.board[r-i][c+i] == p_value for i in range(4)): return True
-        for c in range(self.cols - 3):
-            for r in range(self.rows - 3):
-                if all(self.board[r+i][c+i] == p_value for i in range(4)): return True
+        #for c in range(self.cols - 3):
+         #   for r in range(3, self.rows):
+          #      if all(self.board[r-i][c+i] == p_value for i in range(4)): return True
+        #for c in range(self.cols - 3):
+         #   for r in range(self.rows - 3):
+          #s      if all(self.board[r+i][c+i] == p_value for i in range(4)): return True
         return False
         
         
