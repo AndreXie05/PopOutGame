@@ -1,5 +1,6 @@
 import math
 from graphviz import Digraph
+from collections import Counter
 
 def calculate_whole_entropy(data, feature_index):
     total_samples = len(data)
@@ -194,23 +195,46 @@ def get_me_vertex(data):
     return temp_dictionary
 
 def find_result(tree, input_data):
-    # Percorremos cada ramo da árvore atual
+    if not isinstance(tree, list):
+        return tree
+
+    # 1. Tentativa de correspondência exata
     for branch in tree:
         valor_no_ramo, conteudo = branch
-        
-        # Verificamos se o valor deste ramo existe em qualquer posição do nosso input
-        # (Já que o seu ID3 usa etiquetas únicas como "Baixo_0", "Alto_1", etc.)
         if valor_no_ramo in input_data:
             if isinstance(conteudo, list):
-                # Se for uma lista, continuamos a descer na árvore
-                return find_result(conteudo, input_data)
+                res = find_result(conteudo, input_data)
+                if res != "Desconhecido":
+                    return res
             else:
-                # Se não for lista, encontrámos a folha (a decisão)
                 return conteudo
-                
-    return "Desconhecido"
 
+    # 2. Se chegou aqui, não encontrou o ramo exato. 
+    # Sol. temporária: Em vez de retornar "Desconhecido", tentamos atribuir-lhe o valor da maioria?
+    return obter_voto_majoritario(tree)
 
+def obter_voto_majoritario(item):
+    """
+    Percorre todos os ramos abaixo deste nó e conta qual a classe 
+    que aparece mais vezes para dar um palpite educado.
+    """
+    folhas = []
+    
+    def extrair_folhas(obj):
+        if not isinstance(obj, list):
+            folhas.append(obj)
+        else:
+            for b in obj:
+                extrair_folhas(b[1]) #se não for folha percorre os tuples, nomeadamente a pos 1 dos tuples, 
+                #quer isso seja uma folha quer seja outro ramo(lista de tuples)
+    
+    extrair_folhas(item)
+    
+    if not folhas:
+        return "Desconhecido"
+    
+    # Retorna a classe mais frequente entre as folhas deste ramo
+    return Counter(folhas).most_common(1)[0][0]
 
 def visualize_tree(tree, parent_id=None, edge_label="", graph=None):
     if graph is None:
