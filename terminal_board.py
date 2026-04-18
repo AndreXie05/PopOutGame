@@ -52,7 +52,6 @@ def run_terminal():
 
         # 3. Verificar repetição (Regra 3)
         if historico_estados[estado_serializado] >= 3:
-            board.display()
             print("\n--- EMPATE POR REPETIÇÃO DE ESTADO (3ª VEZ) ---")
             return
         
