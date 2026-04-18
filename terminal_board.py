@@ -43,9 +43,19 @@ def run_terminal():
     print("Modo Terminal: 1-HvIA | 2-HvH | 3-IAvIA")
     mode = int(input("Escolhe: "))
 
+    historico_estados = {}
     while not board.is_terminal():
         board.display()
+        # 2. Registar o estado ANTES de mostrar ou pedir a jogada
+        estado_serializado = (tuple(tuple(row) for row in board.board), board.current_player)
+        historico_estados[estado_serializado] = historico_estados.get(estado_serializado, 0) + 1
 
+        # 3. Verificar repetição (Regra 3)
+        if historico_estados[estado_serializado] >= 3:
+            board.display()
+            print("\n--- EMPATE POR REPETIÇÃO DE ESTADO (3ª VEZ) ---")
+            return
+        
         # --- Verificar se o tabuleiro está cheio e sem vencedor ---
         winner = board.get_winner()
         if winner is None:

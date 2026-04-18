@@ -74,12 +74,12 @@ class PopOutBoard:
         for c in range(self.cols):
             for r in range(self.rows - 3):
                 if all(self.board[r+i][c] == p_value for i in range(4)): return True
-        #for c in range(self.cols - 3):
-         #   for r in range(3, self.rows):
-          #      if all(self.board[r-i][c+i] == p_value for i in range(4)): return True
-        #for c in range(self.cols - 3):
-         #   for r in range(self.rows - 3):
-          #s      if all(self.board[r+i][c+i] == p_value for i in range(4)): return True
+        for c in range(self.cols - 3):
+            for r in range(3, self.rows):
+                if all(self.board[r-i][c+i] == p_value for i in range(4)): return True
+        for c in range(self.cols - 3):
+            for r in range(self.rows - 3):
+              if all(self.board[r+i][c+i] == p_value for i in range(4)): return True
         return False
         
         
