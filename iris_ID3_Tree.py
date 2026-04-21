@@ -1,4 +1,4 @@
-from ID3_Tree import get_me_vertex, visualize_tree, find_result
+from ID3_Tree import ID3
 import numpy as np
 import random
 
@@ -16,8 +16,7 @@ Problema: no ID3 se a árvore não reconhece a combinação de atributos do dado
 Possível sol: implementar um valor defeito/aumentar conjunto de treino/melhorar o find_result
 """
 
-def carregar_e_discretizar_iris(nome_arquivo):
-    data_discretizada = []
+def carregar_iris(nome_arquivo):
     try:
         with open(nome_arquivo, 'r') as f:
             linhas = f.readlines()
@@ -34,63 +33,86 @@ def carregar_e_discretizar_iris(nome_arquivo):
                 temp_X.append([float(x) for x in partes[:4]])
                 temp_y.append(partes[-1].strip()) # strip() limpa espaços e \n
 
-            temp_X = np.array(temp_X)
-            medias = np.mean(temp_X, axis=0)
 
-            for i in range(len(temp_X)):
-                linha_categorica = []
-                for j in range(4):
-                    linha_categorica.append(f"Baixo_{j}" if temp_X[i][j] <= medias[j] else f"Alto_{j}")
-                
-                linha_categorica.append(temp_y[i])
-                data_discretizada.append(linha_categorica)
-        return data_discretizada
+            temp_X = np.array(temp_X)
+ 
+        return np.array(temp_X), np.array(temp_y)
     except FileNotFoundError:
         return None
-    
+
+def discretizar(X_train, y_train, X_test, y_test):
+    train_data = []
+    medias_treino = np.mean(X_train, axis=0)
+    for i in range(len(X_train)):
+        linha_categorica = []
+        # Primeiro: adiciona as 4 características
+        for j in range(4):
+            linha_categorica.append(f"Baixo_{j}" if X_train[i][j] <= medias_treino[j] else f"Alto_{j}")
+        
+        # Só DEPOIS do ciclo j é que adicionas o target (y)
+        linha_categorica.append(y_train[i])
+        # E só agora adicionas a linha completa ao dataset
+        train_data.append(linha_categorica)
+
+    test_data = []
+    medias_teste = np.mean(X_test, axis=0)
+    for i in range(len(X_test)):
+        linha_categorica_test = []
+        for j in range(4):
+            linha_categorica_test.append(f"Baixo_{j}" if X_test[i][j] <= medias_teste[j] else f"Alto_{j}")
+        
+        linha_categorica_test.append(y_test[i])
+        test_data.append(linha_categorica_test)
+
+    return train_data, test_data
 
 # --- Main Execution ---
-data_iris = carregar_e_discretizar_iris("iris.csv")
-
-if data_iris:
-    # 1. Split Manual (não podemos usar sklearn acho eu)
+X_raw, y_raw = carregar_iris("iris.csv")
+if (X_raw is not None) and (y_raw is not None):
+    #Split Manual (não podemos usar sklearn acho eu)
     random.seed(42) # Para resultados consistentes
-    random.shuffle(data_iris) #baralhamos os dados hihi (sei lá se têm alguma ordem associada. Só por precaução)
+
+    # Criar índices e baralhar
+    indices = list(range(len(X_raw)))
+    random.shuffle(indices) #baralhamos os dados hihi (sei lá se têm alguma ordem associada. Só por precaução)
     
     #divisão dos dados
-    split_point = int(len(data_iris) * 0.8)
-    train_data = data_iris[:split_point]
-    test_data = data_iris[split_point:]
+    split_point = int(len(X_raw) * 0.8) #fica 80% para teste e 20% para treino
+    train_indices = indices[:split_point]
+    test_indices = indices[split_point:]
 
-    print(f"Dataset: {len(data_iris)} amostras. Treino: {len(train_data)}, Teste: {len(test_data)}")
+    X_train = X_raw[train_indices]
+    y_train = y_raw[train_indices]
+    X_test = X_raw[test_indices]
+    y_test = y_raw[test_indices]
 
+    print(f"Dataset: {len(X_raw)} amostras. Treino: {len(X_train)}, Teste: {len(X_test)}")
+
+    train_data , test_data = discretizar(X_train, y_train, X_test, y_test)
+
+    modelo_id3 = ID3()
+
+    indices_colunas = [0, 1, 2, 3] #neste caso conheço os índices porque espreitei o datasets hihi
     # 2. Construir a árvore APENAS com dados de treino
-    tree_iris = get_me_vertex(train_data)
+    tree_iris = modelo_id3.construir(train_data, indices_colunas)
 
-    # 3. Visualização (Gera ficheiro 'iris_tree.png')
-    graph = visualize_tree(tree_iris)
-    graph.render("iris_tree", view=True)
-    print("Árvore visualizada e guardada como 'iris_tree.png'.")
 
     # 4. Tabela de Previsão vs Real
     print("\n" + "="*45)
-    print(f"{'REAL':<20} | {'PREVISTO':<20}")
+    print(f"{'REAL':<20} | {'PREVISTO':<20} ")
     print("-" * 45)
     
     acertos = 0
     for row in test_data:
-        features = row[:-1]
-        real = row[-1].strip()
+        features = row[:-1] #atributos
+        real = row[-1].strip() #target
 
-        res = find_result(tree_iris, features)
-        
-        # Limpa o resultado caso venha com o prefixo "Result: "
-        res_limpo = str(res).replace("Result: ", "").strip()
+        res = modelo_id3.prever(tree_iris, features) #prevÊ o resultado
 
-        if res_limpo == real:
+        if res == real:
             acertos += 1
 
-        print(f"{real:<20} | {res_limpo:<20}")
+        print(f"{real:<20} | {res:<20} ")
         print()
 
     
