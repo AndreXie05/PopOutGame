@@ -1,264 +1,117 @@
 import math
-from graphviz import Digraph
 from collections import Counter
+import graphviz
 
-def calculate_whole_entropy(data, feature_index):
-    total_samples = len(data)
-    feature_entropy = 0.0
+class ID3:
+    def __init__(self):
+        self.tree = {}
 
-    unique_values = set(data[i][feature_index] for i in range(total_samples))
+    def entropia(self, labels):
+        """Calcula a entropia de um conjunto de etiquetas (alvos)."""
+        contagem = Counter(labels)
+        total = len(labels)
+        ent = 0
+        for classe in contagem:
+            p = contagem[classe] / total
+            ent -= p * math.log2(p)
+        return ent
 
-    # print("unique_values", unique_values)
+    def ganho_informacao(self, data, atributo_index, target_index):
+        """Calcula o ganho de informação ao dividir por um atributo."""
+        # Entropia total do conjunto atual
+        ent_total = self.entropia([row[target_index] for row in data])
+        
+        # Calcular entropia ponderada dos subconjuntos
+        valores_atributo = set(row[atributo_index] for row in data) #cria um set com todos os valores que aparecem naquela coluna
+        ent_subconjuntos = 0
+        for valor in valores_atributo: #percorre os valores desse atributo 
+            subconjunto = [row for row in data if row[atributo_index] == valor] #filtra as linhas que tÊm aquele valor específico
+            prob = len(subconjunto) / len(data) #vê o peso com base na proporção de casos
+            ent_subconjuntos += prob * self.entropia([row[target_index] for row in subconjunto]) #calcula a entropia ponderada e adiciona ao valor do split do atributo
+        
+        return ent_total - ent_subconjuntos #retorna a information gain de fazer split nesse atributo
 
-    for value in unique_values:
-        subset_data = [data[i] for i in range(
-            total_samples) if data[i][feature_index] == value]
+    def construir(self, data, atributos, target_index= -1):
+        """Algoritmo recursivo principal."""
+        labels = [row[target_index] for row in data]
 
-        subset_size = len(subset_data)
-        # print(subset_size)
+        # Caso base 1: Todos os exemplos pertencem à mesma classe
+        if len(set(labels)) == 1:
+            return labels[0]
 
-        if subset_size == 0:
-            continue
+        # Caso base 2: Não há mais atributos para dividir (fica o da maioria)
+        if not atributos:
+            return Counter(labels).most_common(1)[0][0]
 
-        class_counts = [row[-1] for row in subset_data]
+        # Escolher o melhor atributo (maior Ganho de Informação)
+        ganhos = [self.ganho_informacao(data, i, target_index) for i in atributos]
+        melhor_atributo_idx = atributos[ganhos.index(max(ganhos))]
+        
+        arvore = {melhor_atributo_idx: {}}
+        
+        # Criar ramos para cada valor do melhor atributo
+        valores = set(row[melhor_atributo_idx] for row in data) #obtém todos os valores que o melhor atributo (maior ganho de informação) tem
+        novos_atributos = [i for i in atributos if i != melhor_atributo_idx] #garante que não usamos uma segunda vez o atributo que acabámos de usar
 
-        # class_probabilities = [class_counts.count(
-        #     c) / subset_size for c in set(class_counts)]
+        for valor in valores:
+            sub_data = [row for row in data if row[melhor_atributo_idx] == valor] #separa os valores que vão "descer" por cada ramo específico
+            arvore[melhor_atributo_idx][valor] = self.construir(sub_data, novos_atributos, target_index) #recursividade
+            
+        return arvore
 
-        class_probabilities = len(class_counts) / total_samples
+    def prever(self, arvore, amostra):
+        """Navega na árvore para prever a classe de uma nova amostra."""
+        if not isinstance(arvore, dict): #se o que temos for um string chagámos à folha/resultado. Se for um dicionário
+            return arvore
+        
+        atributo = list(arvore.keys())[0] #como cada nó é um dicionário cuja chave corresponde ao índice do atributo, pegamos nessa chave para saber que atributo consultar
+        valor = amostra[atributo] #vamos à amostra nova que queremos prever e vemos que valor é que o atributo tem 
+        
+        if valor in arvore[atributo]:
+            return self.prever(arvore[atributo][valor], amostra) #Continuamos recursivamente até chegar a uma folha
+        else:
+            return "Desconhecido"
 
-        subset_entropy = -class_probabilities * math.log2(class_probabilities)
+    def gerar_imagem_arvore(self, arvore, nome_ficheiro="arvore_decisao"):
+        """Gera e guarda uma imagem .png da árvore usando a biblioteca Graphviz."""
+        if graphviz is None:
+            print("Erro: A biblioteca 'graphviz' não foi encontrada no Anaconda.")
+            print("Instala-a com: conda install python-graphviz")
+            return
 
-        # print(class_probabilities)
-        # print(subset_entropy)
+        # Criar o objeto Digraph (Direcionado)
+        dot = graphviz.Digraph(comment='Árvore de Decisão ID3', format='png')
+        dot.attr(rankdir='TB', size='10,10')
+        
+        # Configuração visual dos nós
+        dot.attr('node', shape='box', style='filled, rounded', fontname='helvetica')
 
-        feature_entropy += subset_entropy
+        self.contagem_nos = 0
 
-    return feature_entropy
-
-
-def calculate_feature_entropy(data, feature_index):
-    total_samples = len(data)
-    feature_entropy = 0.0
-    subset_entropies = []  # Create an array to store subset entropies
-
-    unique_values = set(data[i][feature_index] for i in range(total_samples))
-
-    # print("unique_values", unique_values)
-
-    for value in unique_values:
-        subset_data = [data[i] for i in range(
-            total_samples) if data[i][feature_index] == value]
-
-        subset_size = len(subset_data)
-
-        if subset_size == 0:
-            continue
-
-        class_counts = [row[-1] for row in subset_data]
-        class_probabilities = [class_counts.count(
-            c) / subset_size for c in set(class_counts)]
-
-        subset_entropy = 0.0
-
-        for p in class_probabilities:
-            if p > 0:
-                subset_entropy -= p * math.log2(p)
-
-        feature_entropy += (subset_size / total_samples) * subset_entropy
-
-        # Store (value, subset_entropy) tuple
-        subset_entropies.append((value, subset_entropy))
-
-        # print("value:", value)
-        # print("class_probabilities:", class_probabilities)
-        # print("subset_size:", subset_size)
-        # print("subset_entropy:", subset_entropy)
-        # print("subset_entropies:", subset_entropies)
-        # print("entropy (probability * Ent):", (subset_size / total_samples), " * ", subset_entropy, " = ",
-        #       (subset_size / total_samples) * subset_entropy)
-
-    # Return both the feature entropy and subset entropies
-    # print("feature_entropy:", feature_entropy)
-    # print("\n")
-    return feature_entropy, subset_entropies
-
-
-def calculate_information_gain(data):
-    target_entropy = calculate_whole_entropy(data, feature_index=-1)
-    num_features = len(data[0]) - 1  # Exclude the target feature
-    information_gains = []
-
-    for feature_index in range(num_features):
-        feature_entropy, subset_entropies = calculate_feature_entropy(
-            data, feature_index)
-        information_gain = target_entropy - feature_entropy
-        information_gains.append((information_gain, subset_entropies))
-
-    return information_gains
-
-
-def get_me_max_gain(information_gains):
-    maxGain = (0, (0, []))
-    for i, ig in enumerate(information_gains):
-        # print(maxGain[1])
-        if maxGain[1][0] < ig[0]:
-            maxGain = (i, ig)
-
-    return maxGain
-
-
-def get_the_decision(data, feature_index, value):
-    res = ""
-
-    for tuple in data:
-        if (tuple[feature_index] == value):
-            res = tuple[-1]
-            break
-
-    return res
-
-
-def get_me_new_data(data, feature_index, value):
-    newData = []
-
-    for tuple in data:
-        if (tuple[feature_index] == value):
-            # row_without_first_element = tuple[1:]
-            touple_without_index_element = tuple[:feature_index] + \
-                tuple[feature_index+1:]
-            newData.append(touple_without_index_element)
-            # print(touple_without_index_element)
-
-    return newData
-
-
-# -----------Calculate the entropy of the 'buys computer' feature (last column)
-
-# buys_computer_entropy = calculate_whole_entropy(data, feature_index=-1)
-# print("Entropy of the 'buys computer' feature:", buys_computer_entropy)
-
-# -----------Modify this to the index of the feature you want to calculate entropy for
-
-# feature_index = 3
-# feature_entropy, subset_entropies = calculate_feature_entropy(
-#     data, feature_index)
-# print("Entropy of the specified feature:", feature_entropy)
-# print("Subset entropies:", subset_entropies)
-# print("IG:", buys_computer_entropy - feature_entropy)
-
-"""
-retorna uma lista de tuplas aninhadas que representa a estrutura hierárquica da árvore. É, essencialmente, um dicionário construído com listas onde cada nível da árvore é uma nova lista dentro da anterior.
-
-Aqui está o que compõe cada tupla retornada: (valor_do_atributo, resultado).
-"""
-
-def get_me_vertex(data):
-
-    information_gains = calculate_information_gain(data)
-
-    # Print the information gains for each feature
-    # for i, ig in enumerate(information_gains):
-    #     print(f"Information Gain for feature {i}: {ig}")
-
-    # -----------returns maxGain = (vertex feature number, (gain, [subset_entropies]))
-    maxGain = get_me_max_gain(information_gains=information_gains)
-
-    root_vertex = maxGain[0]
-    res_touple = maxGain[1][1]
-    # print(root_vertex)
-    # print(res_touple)
-
-    temp_dictionary = []
-    for i in res_touple:
-        sub_touple = ()
-        if (i[1] == 0): #se a entropia for 0, cria um nó folha
-            decision = get_the_decision(data, root_vertex, i[0])
-            # print("FORM_if: ", i[0])
-            # print((i[0], decision))
-
-            sub_touple = (decision)
-
-        else: #se não, gera um novo subset = faz split
-            # break
-            newData = []
-            # print("FORM_else: ", i[0])
-            newData = get_me_new_data(data, root_vertex, i[0])
-
-            sub_touple = get_me_vertex(newData)
-            # print("tempRes inside: ", sub_touple)
-
-        #print("\n")
-
-        temp_dictionary.append((i[0], sub_touple))
-
-    return temp_dictionary
-
-def find_result(tree, input_data):
-    if not isinstance(tree, list):
-        return tree
-
-    # 1. Tentativa de correspondência exata
-    for branch in tree:
-        valor_no_ramo, conteudo = branch
-        if valor_no_ramo in input_data:
-            if isinstance(conteudo, list):
-                res = find_result(conteudo, input_data)
-                if res != "Desconhecido":
-                    return res
+        def adicionar_nos(sub_arvore, pai_id=None, valor_aresta=None):
+            self.contagem_nos += 1
+            no_id = str(self.contagem_nos)
+            
+            if not isinstance(sub_arvore, dict):
+                # É um nó folha (Resultado)
+                dot.node(no_id, f"JOGADA:\n{sub_arvore}", fillcolor='#90EE90') # Verde claro
             else:
-                return conteudo
+                # É um nó de decisão (Atributo)
+                atributo = list(sub_arvore.keys())[0]
+                dot.node(no_id, f"Índice: {atributo}", fillcolor='#ADD8E6') # Azul claro
+                
+            # Se houver um pai, cria a ligação (aresta)
+            if pai_id:
+                dot.edge(pai_id, no_id, label=str(valor_aresta))
+            
+            # Se for dicionário, continua a recursão
+            if isinstance(sub_arvore, dict):
+                atributo = list(sub_arvore.keys())[0]
+                for valor, filho in sub_arvore[atributo].items():
+                    adicionar_nos(filho, no_id, valor)
 
-    # 2. Se chegou aqui, não encontrou o ramo exato. 
-    # Sol. temporária: Em vez de retornar "Desconhecido", tentamos atribuir-lhe o valor da maioria?
-    return obter_voto_majoritario(tree)
-
-def obter_voto_majoritario(item):
-    """
-    Percorre todos os ramos abaixo deste nó e conta qual a classe 
-    que aparece mais vezes para dar um palpite educado.
-    """
-    folhas = []
-    
-    def extrair_folhas(obj):
-        if not isinstance(obj, list):
-            folhas.append(obj)
-        else:
-            for b in obj:
-                extrair_folhas(b[1]) #se não for folha percorre os tuples, nomeadamente a pos 1 dos tuples, 
-                #quer isso seja uma folha quer seja outro ramo(lista de tuples)
-    
-    extrair_folhas(item)
-    
-    if not folhas:
-        return "Desconhecido"
-    
-    # Retorna a classe mais frequente entre as folhas deste ramo
-    return Counter(folhas).most_common(1)[0][0]
-
-def visualize_tree(tree, parent_id=None, edge_label="", graph=None):
-    if graph is None:
-        graph = Digraph(format='png', engine='dot')
-        graph.attr('node', shape='ellipse')
-
-    for branch in tree:
-        attr_value, content = branch
+        adicionar_nos(arvore)
         
-        # Criar um ID único para este nó baseado no hash da estrutura
-        node_id = str(id(branch))
-        
-        if isinstance(content, list):
-            # É um nó de decisão (sub-árvore)
-            graph.node(node_id, label=f"Atributo?")
-            if parent_id:
-                graph.edge(parent_id, node_id, label=str(attr_value))
-            visualize_tree(content, parent_id=node_id, graph=graph)
-        else:
-            # É um nó folha
-            leaf_id = str(id(content)) + str(node_id)
-            graph.node(leaf_id, label=str(content), shape='box', color='green')
-            if parent_id:
-                graph.edge(parent_id, leaf_id, label=str(attr_value))
-    
-    return graph
-
+        # Guarda e tenta abrir a imagem automaticamente
+        output_path = dot.render(nome_ficheiro, view=True)
+        print(f"Sucesso! Imagem gerada em: {output_path}")
