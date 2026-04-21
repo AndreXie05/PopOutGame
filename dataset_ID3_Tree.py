@@ -1,7 +1,7 @@
 import csv
 import numpy as np
 import random
-from ID3_Tree import get_me_vertex, find_result
+from ID3_Tree import ID3
 
 def carregar_dataset_jogo(nome_arquivo):
     data_formatada = []
@@ -29,7 +29,7 @@ data = carregar_dataset_jogo("dataset.csv")
 
 if(data):
 
-    # 1. Split Manual (não podemos usar sklearn acho eu)
+    # Split Manual (não podemos usar sklearn acho eu)
     random.seed(42) # Para resultados consistentes
     random.shuffle(data) #baralhamos os dados hihi (sei lá se têm alguma ordem associada. Só por precaução)
 
@@ -39,11 +39,18 @@ if(data):
     test_data = data[split_point:]
 
     print(f"Dataset: {len(data)} amostras. Treino: {len(train_data)}, Teste: {len(test_data)}")
+    
+    # O número de colunas de atributos é o tamanho de uma linha menos 1 (a jogada)
+    num_features = len(train_data[0]) - 1 
 
-    tree = get_me_vertex(train_data)
+    # Criamos a lista de índices das colunas: [0, 1, 2, ..., 42]
+    indices_atributos = list(range(num_features))
+
+    modelo_id3 = ID3()
+    tree = modelo_id3.construir(train_data, indices_atributos)
 
 
-    # 4. Tabela de Previsão vs Real
+    # Tabela de Previsão vs Real
     print("\n" + "="*45)
     print(f"{'REAL':<20} | {'PREVISTO':<20}")
     print("-" * 45)
@@ -53,19 +60,18 @@ if(data):
         features = row[:-1]
         real = row[-1].strip()
 
-        res = find_result(tree, features)
+        res = modelo_id3.prever(tree, features)
         
-        # Limpa o resultado caso venha com o prefixo "Result: "
-        res_limpo = str(res).replace("Result: ", "").strip()
-
-        if res_limpo == real:
+        if res == real:
             acertos += 1
 
-        print(f"{real:<20} | {res_limpo:<20}")
+        print(f"{real:<20} | {res:<20}")
         print()
 
     print("="*45)
     print(acertos)
+
+    modelo_id3.gerar_imagem_arvore(tree)
 else:
     print("Erro: iris.csv não encontrado.")
 
