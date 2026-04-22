@@ -1,6 +1,7 @@
 from ID3_Tree import ID3
 import numpy as np
 import random
+from collections import Counter
 
 """
 Discretização do dataset: processo de transformar valores numéricos contínuos 
@@ -67,7 +68,7 @@ def discretizar(X_train, y_train, X_test, y_test):
     return train_data, test_data
 
 # --- Main Execution ---
-X_raw, y_raw = carregar_iris("iris.csv")
+X_raw, y_raw = carregar_iris("Iris_dataset.csv")
 if (X_raw is not None) and (y_raw is not None):
     #Split Manual (não podemos usar sklearn acho eu)
     random.seed(42) # Para resultados consistentes
@@ -96,25 +97,27 @@ if (X_raw is not None) and (y_raw is not None):
     # 2. Construir a árvore APENAS com dados de treino
     tree_iris = modelo_id3.construir(train_data, indices_colunas)
 
+    # 2. Descobre a classe mais comum no conjunto de TREINO
+    classe_mais_comum = Counter(y_train).most_common(1)[0][0]
 
-    # 4. Tabela de Previsão vs Real
+    # 3. Tabela de Previsão vs Real
     print("\n" + "="*45)
     print(f"{'REAL':<20} | {'PREVISTO':<20} ")
     print("-" * 45)
     
     acertos = 0
     for row in test_data:
-        features = row[:-1] #atributos
-        real = row[-1].strip() #target
+        features = row[:-1] 
+        real = row[-1].strip() 
 
-        res = modelo_id3.prever(tree_iris, features) #prevÊ o resultado
+        # 4. Passa a classe_mais_comum como o teu "Plano B"
+        res = modelo_id3.prever(tree_iris, features, classe_default=classe_mais_comum) 
 
         if res == real:
             acertos += 1
 
         print(f"{real:<20} | {res:<20} ")
         print()
-
     
     print("="*45)
 else:

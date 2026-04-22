@@ -59,18 +59,18 @@ class ID3:
             
         return arvore
 
-    def prever(self, arvore, amostra):
+    def prever(self, arvore, amostra, classe_default="Desconhecido"):
         """Navega na árvore para prever a classe de uma nova amostra."""
-        if not isinstance(arvore, dict): #se o que temos for um string chagámos à folha/resultado. Se for um dicionário
+        if not isinstance(arvore, dict): 
             return arvore
         
-        atributo = list(arvore.keys())[0] #como cada nó é um dicionário cuja chave corresponde ao índice do atributo, pegamos nessa chave para saber que atributo consultar
-        valor = amostra[atributo] #vamos à amostra nova que queremos prever e vemos que valor é que o atributo tem 
+        atributo = list(arvore.keys())[0] 
+        valor = amostra[atributo] 
         
         if valor in arvore[atributo]:
-            return self.prever(arvore[atributo][valor], amostra) #Continuamos recursivamente até chegar a uma folha
+            return self.prever(arvore[atributo][valor], amostra, classe_default) 
         else:
-            return "Desconhecido"
+            return classe_default
 
     def gerar_imagem_arvore(self, arvore, nome_ficheiro="arvore_decisao"):
         """Gera e guarda uma imagem .png da árvore usando a biblioteca Graphviz."""
