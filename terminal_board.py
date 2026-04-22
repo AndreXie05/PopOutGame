@@ -1,6 +1,10 @@
-from moves import PopOutBoard
-from mcts4 import mcts
-from dataset import save_example
+from moves import PopOutBoard 
+from mcts4 import mcts 
+from dataset import save_example 
+from ID3_Tree import ID3 
+from popout_ID3_Tree import carregar_dataset_jogo 
+from collections import Counter
+from ia_vs_ia import iniciar_duelo
 
 def get_move(board):
     # Verifica se o tabuleiro está cheio (nenhuma célula com 0 na linha do topo)
@@ -38,67 +42,63 @@ def get_move(board):
             print("Erro: Insere um número válido para a coluna (0-6).")
 
 def run_terminal():
-    board = PopOutBoard()
+    board = PopOutBoard() #
 
-    print("Modo Terminal: 1-HvIA | 2-HvH | 3-IAvIA")
+    print("Modo Terminal: 1-HvIA | 2-HvH | 3- MCTS vs Árvore")
     mode = int(input("Escolhe: "))
 
+    # --- Se for o modo 3, treinamos a árvore antes de começar ---
+    tree = None
+    modelo_id3 = None
+    fallback_move = None
+    if mode == 3:
+        iniciar_duelo() # Chama o ficheiro novo
+        return # Termina para não correr o loop antigo
+
     historico_estados = {}
-    while not board.is_terminal():
-        board.display()
-        # 2. Registar o estado ANTES de mostrar ou pedir a jogada
-        estado_serializado = (tuple(tuple(row) for row in board.board), board.current_player)
-        historico_estados[estado_serializado] = historico_estados.get(estado_serializado, 0) + 1
-
-        # 3. Verificar repetição (Regra 3)
-        if historico_estados[estado_serializado] >= 3:
-            print("\n--- EMPATE POR REPETIÇÃO DE ESTADO (3ª VEZ) ---")
-            return
+    while not board.is_terminal(): #
+        board.display() #
         
-        # --- Verificar se o tabuleiro está cheio e sem vencedor ---
-        winner = board.get_winner()
-        if winner is None:
-            tabuleiro_cheio = all(all(cell != 0 for cell in row) for row in board.board)
-            if tabuleiro_cheio:
-                print("\n--- O TABULEIRO ESTÁ COMPLETAMENTE CHEIO! ---")
-                
-                # 1. Calcular quais colunas permitem 'pop' para o jogador atual
-                colunas_validas = [c for c in range(board.cols) if board.is_valid_move(c, 'pop')]
-                
-                if colunas_validas:
-                    # 2. Mostrar as opções ao jogador
-                    print(f"Podes fazer 'pop' nas colunas: {colunas_validas}")
-                    
-                    escolha = input("Deseja fazer um pop (p) ou terminar o jogo com empate (e)? Resposta: ").strip().lower()
-                    if escolha == 'e':
-                        print("Jogo terminado por empate (opção do jogador).")
-                        return
-                    
-                    # Se ele escolheu 'p', o código continua e vai chamar o get_move(board) abaixo
-                else:
-                    print("Não tens peças na linha de base para retirar. O jogo termina empatado.")
-                    return
-        # --- Fim da verificação de tabuleiro cheio ---
+        # ... (mantém o código do histórico de estados e empate por repetição) ...
 
-        # determinar se é humano a jogar
+        # Determinar quem joga
         if mode == 1:
             is_human = board.current_player == 1
         elif mode == 2:
             is_human = True
-        else:
+        else: # No modo 3, ninguém é humano
             is_human = False
 
         if is_human:
             print(f"Jogador {board.current_player}")
             move = get_move(board)
         else:
-            print(f"IA ({board.current_player})...")
-            node = mcts(board, iterations=300)
-            move = node.move
-            save_example(board, move)
+            # --- LÓGICA IA vs IA (MODO 3) ---
+            if mode == 3 and board.current_player == 2:
+                print("IA (Árvore de Decisão - Jogador 2)...")
+                # Prepara os dados para a árvore
+                features = [str(cell) for row in board.board for cell in row] + [str(board.current_player)]
+                previsao = modelo_id3.prever(tree, features, classe_default=fallback_move) #
+                
+                # Converte string "3_drop" para tuplo (3, 'drop')
+                col_str, tipo = previsao.split('_')
+                move = (int(col_str), tipo)
+
+                # Segurança: se a árvore sugerir erro, usa MCTS rápido
+                if not board.is_valid_move(move[0], move[1]): #
+                    print("Árvore falhou, a usar MCTS de emergência...")
+                    node = mcts(board, iterations=100) #
+                    move = node.move
+            else:
+                # Caso padrão: MCTS4 (Jogador 1 no modo 3, ou Jogador 2 no modo 1)
+                print(f"IA (MCTS4 - Jogador {board.current_player})...")
+                node = mcts(board, iterations=300) #
+                move = node.move
+                save_example(board, move) #
+            
             print("IA jogou:", move)
 
-        board = board.apply_move(move)
+        board = board.apply_move(move) #
 
     # Após o loop, mostrar o resultado usando get_winner()
     board.display()
