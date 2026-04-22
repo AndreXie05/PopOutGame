@@ -31,16 +31,22 @@ class ID3:
         
         return ent_total - ent_subconjuntos #retorna a information gain de fazer split nesse atributo
 
-    def construir(self, data, atributos, target_index= -1):
-        """Algoritmo recursivo principal."""
+    # Adicionamos max_depth, min_samples e a profundidade_atual
+    def construir(self, data, atributos, target_index=-1, profundidade_atual=0, max_depth=5, min_samples=10):
+        """Algoritmo recursivo principal com prevenção de Overfitting."""
         labels = [row[target_index] for row in data]
 
         # Caso base 1: Todos os exemplos pertencem à mesma classe
         if len(set(labels)) == 1:
             return labels[0]
 
-        # Caso base 2: Não há mais atributos para dividir (fica o da maioria)
+        # Caso base 2: Não há mais atributos para dividir
         if not atributos:
+            return Counter(labels).most_common(1)[0][0]
+
+        # Se atingimos a profundidade máxima OU se temos muito poucos dados
+        if (max_depth is not None and profundidade_atual >= max_depth) or (len(data) < min_samples):
+            # Para e devolve a jogada mais comum neste ramo
             return Counter(labels).most_common(1)[0][0]
 
         # Escolher o melhor atributo (maior Ganho de Informação)
@@ -49,13 +55,17 @@ class ID3:
         
         arvore = {melhor_atributo_idx: {}}
         
-        # Criar ramos para cada valor do melhor atributo
-        valores = set(row[melhor_atributo_idx] for row in data) #obtém todos os valores que o melhor atributo (maior ganho de informação) tem
-        novos_atributos = [i for i in atributos if i != melhor_atributo_idx] #garante que não usamos uma segunda vez o atributo que acabámos de usar
+        valores = set(row[melhor_atributo_idx] for row in data)
+        novos_atributos = [i for i in atributos if i != melhor_atributo_idx]
 
         for valor in valores:
-            sub_data = [row for row in data if row[melhor_atributo_idx] == valor] #separa os valores que vão "descer" por cada ramo específico
-            arvore[melhor_atributo_idx][valor] = self.construir(sub_data, novos_atributos, target_index) #recursividade
+            sub_data = [row for row in data if row[melhor_atributo_idx] == valor]
+            
+            # NOVO: Passar os novos limites e aumentar a profundidade nas chamadas recursivas
+            arvore[melhor_atributo_idx][valor] = self.construir(
+                sub_data, novos_atributos, target_index, 
+                profundidade_atual + 1, max_depth, min_samples
+            )
             
         return arvore
 
