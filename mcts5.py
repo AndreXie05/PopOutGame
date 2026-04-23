@@ -117,6 +117,10 @@ def mcts(state, iterations=1500, c=1.414, max_children=5):
     safe_moves = []
     for move in legal_moves:
         test_state = state.apply_move(move)
+
+        if test_state.is_terminal() and test_state.get_winner() != state.current_player:
+            continue
+
         opponent_wins_next = False
         
         if not test_state.is_terminal():
