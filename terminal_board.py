@@ -1,15 +1,20 @@
 from moves import PopOutBoard 
-from mcts4 import mcts 
+from mcts5 import mcts 
 from dataset import save_example 
-from ID3_Tree import ID3 
-from popout_ID3_Tree import carregar_dataset_jogo 
-from collections import Counter
 from ia_vs_ia import iniciar_duelo
 
 def get_move(board):
     # Verifica se o tabuleiro está cheio (nenhuma célula com 0 na linha do topo)
     tabuleiro_cheio = all(board.board[0][c] != 0 for c in range(board.cols))
     
+    # Verifica se o jogador ATUAL tem peças na base para fazer pop
+    tem_pecas_na_base = any(board.board[board.rows - 1][c] == board.current_player for c in range(board.cols))
+
+    # PREVENÇÃO DO BUG DO LOOP INFINITO (Regra do Tabuleiro Cheio)
+    if tabuleiro_cheio and not tem_pecas_na_base:
+        print(f"\n[!] Tabuleiro cheio e o Jogador {board.current_player} não tem peças na base para fazer pop!")
+        return "FORCED_DRAW" # Sinal especial para terminar o jogo
+
     while True:
         try:
             col_input = input("Coluna (0-6): ").strip()
@@ -17,7 +22,7 @@ def get_move(board):
             col = int(col_input)
 
             if tabuleiro_cheio:
-                # Se está cheio, ignoramos a pergunta do tipo e forçamos 'pop'
+                # Se está cheio, sabemos que ele tem peças (por causa do if ali de cima)
                 move_type = 'pop'
                 print(f"Tabuleiro cheio: A assumir 'pop' na coluna {col}...")
             else:
@@ -44,69 +49,65 @@ def get_move(board):
 def run_terminal():
     board = PopOutBoard()
 
-    while True: # Loop para garantir uma escolha válida
+    while True:
         print("\nModo Terminal: 1-HvIA | 2-HvH | 3- MCTS vs Árvore")
         try:
             mode = int(input("Escolhe (1-3): "))
             if mode in [1, 2, 3]:
-                break # Sai do loop se a escolha for correta
+                break
             else:
                 print("Escolha inválida! Por favor, escolhe 1, 2 ou 3.")
         except ValueError:
             print("Erro: Insere um número (1, 2 ou 3).")
+            
     if mode == 3:
-        iniciar_duelo() # Chama o ficheiro novo
-        return # Termina para não correr o loop antigo
+        iniciar_duelo()
+        return
 
-    historico_estados = {}
-    while not board.is_terminal(): #
-        board.display() #
+    # MODO 1 (HvIA) e MODO 2 (HvH)
+    forced_draw = False
+    
+    while not board.is_terminal():
+        board.display()
 
-        # Determinar quem joga
         if mode == 1:
             is_human = board.current_player == 1
-        elif mode == 2:
+        else: # mode == 2
             is_human = True
-        else: # No modo 3, ninguém é humano
-            is_human = False
 
         if is_human:
             print(f"Jogador {board.current_player}")
             move = get_move(board)
+            if move == "FORCED_DRAW":
+                forced_draw = True
+                break
         else:
-            # --- LÓGICA IA vs IA (MODO 3) ---
-            if mode == 3 and board.current_player == 2:
-                print("IA (Árvore de Decisão - Jogador 2)...")
-                # Prepara os dados para a árvore
-                features = [str(cell) for row in board.board for cell in row] + [str(board.current_player)]
-                previsao = modelo_id3.prever(tree, features, classe_default=fallback_move) #
-                
-                # Converte string "3_drop" para tuplo (3, 'drop')
-                col_str, tipo = previsao.split('_')
-                move = (int(col_str), tipo)
-
-                # Segurança: se a árvore sugerir erro, usa MCTS rápido
-                if not board.is_valid_move(move[0], move[1]): #
-                    print("Árvore falhou, a usar MCTS de emergência...")
-                    node = mcts(board, iterations=100) #
-                    move = node.move
-            else:
-                # Caso padrão: MCTS4 (Jogador 1 no modo 3, ou Jogador 2 no modo 1)
-                print(f"IA (MCTS4 - Jogador {board.current_player})...")
-                node = mcts(board, iterations=300) #
-                move = node.move
-                save_example(board, move) #
+            print(f"IA (MCTS5 - Jogador {board.current_player}) a pensar...")
+            node = mcts(board, iterations=1500) # Iterações afinadas para a nova velocidade
+            move = node.move
             
-            print("IA jogou:", move)
+            # Se a IA não tiver peças e o tabuleiro estiver cheio (cenário raro, mas possível)
+            if not move: 
+                print(f"\n[!] A IA não tem jogadas legais e o tabuleiro está bloqueado!")
+                forced_draw = True
+                break
+                
+            print(f"IA jogou: {move}")
+            # Grava a jogada da IA para o teu dataset!
+            save_example(board, move) 
 
-        board = board.apply_move(move) #
+        board = board.apply_move(move)
 
-    # Após o loop, mostrar o resultado usando get_winner()
     board.display()
-    winner = board.get_winner()
-    if winner == 1:
-        print("🎉 JOGADOR 1 (X) VENCEU!")
-    elif winner == 2:
-        print("🎉 JOGADOR 2 (O) VENCEU!")
+    
+    # Tratamento do Fim do Jogo
+    if forced_draw:
+        print("🤝 EMPATE FORÇADO! (Um jogador ficou sem jogadas possíveis com o tabuleiro cheio)")
     else:
-        print("🤝 EMPATE!")
+        winner = board.get_winner()
+        if winner == 1:
+            print("🎉 JOGADOR 1 (X) VENCEU!")
+        elif winner == 2:
+            print("🎉 JOGADOR 2 (O) VENCEU!")
+        else:
+            print("🤝 EMPATE!")

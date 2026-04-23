@@ -5,7 +5,7 @@ from popout_ID3_Tree import carregar_dataset_jogo
 from collections import Counter
 
 def iniciar_duelo():
-    """Executa o duelo: MCTS4 (Jogador 1) vs Árvore de Decisão (Jogador 2)"""
+    """Executa o duelo: MCTS (Jogador 1) vs Árvore de Decisão (Jogador 2)"""
     board = PopOutBoard()
     
     data = carregar_dataset_jogo("dataset.csv")
@@ -22,13 +22,13 @@ def iniciar_duelo():
     todas_as_jogadas = [row[-1] for row in data]
     fallback = Counter(todas_as_jogadas).most_common(1)[0][0]
 
-    print("\n=== DUELO: MCTS4 (X) vs Árvore de Decisão (O) ===")
+    print("\n=== DUELO: MCTS (X) vs Árvore de Decisão (O) ===")
     
     while not board.is_terminal():
         board.display()
         
         if board.current_player == 1:
-            print("MCTS4 a pensar...")
+            print("MCTS a pensar...")
             node = mcts(board, iterations=300)
             move = node.move
         else:
@@ -43,7 +43,7 @@ def iniciar_duelo():
                 move = (int(col_str), tipo)
             else:
                 # Se a árvore falhar, usa MCTS4 rápido
-                print("Aviso: Árvore falhou, a usar MCTS4 de emergência...")
+                print("Aviso: Árvore falhou, a usar MCTS de emergência...")
                 move = mcts(board, iterations=100).move
 
             # Verifica se a jogada é legal no PopOut
@@ -55,6 +55,7 @@ def iniciar_duelo():
 
     board.display()
     vencedor = board.get_winner()
-    if vencedor == 1: print("VENCEDOR: MCTS4!")
+    if vencedor == 1: print("VENCEDOR: MCTS!")
     elif vencedor == 2: print("VENCEDOR: Árvore de Decisão!")
     else: print("EMPATE!")
+    return tree

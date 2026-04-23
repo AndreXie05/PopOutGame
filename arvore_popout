@@ -3,472 +3,458 @@ digraph {
 	rankdir=TB size="10,10"
 	node [fontname=helvetica shape=box style="filled, rounded"]
 	1 [label="Índice: 30" fillcolor="#ADD8E6"]
-	2 [label="Índice: 32" fillcolor="#ADD8E6"]
-	1 -> 2 [label=0]
-	3 [label="Índice: 38" fillcolor="#ADD8E6"]
-	2 -> 3 [label=0]
-	4 [label="Índice: 31" fillcolor="#ADD8E6"]
-	3 -> 4 [label=2]
+	2 [label="Índice: 21" fillcolor="#ADD8E6"]
+	1 -> 2 [label=1]
+	3 [label="Índice: 34" fillcolor="#ADD8E6"]
+	2 -> 3 [label=1]
+	4 [label="JOGADA:
+0_drop" fillcolor="#90EE90"]
+	3 -> 4 [label=1]
 	5 [label="JOGADA:
+3_pop" fillcolor="#90EE90"]
+	3 -> 5 [label=0]
+	6 [label="JOGADA:
 3_drop" fillcolor="#90EE90"]
-	4 -> 5 [label=2]
-	6 [label="Índice: 33" fillcolor="#ADD8E6"]
-	4 -> 6 [label=0]
-	7 [label="JOGADA:
-1_drop" fillcolor="#90EE90"]
-	6 -> 7 [label=2]
-	8 [label="JOGADA:
-2_drop" fillcolor="#90EE90"]
-	6 -> 8 [label=0]
+	3 -> 6 [label=2]
+	7 [label="Índice: 31" fillcolor="#ADD8E6"]
+	2 -> 7 [label=0]
+	8 [label="Índice: 33" fillcolor="#ADD8E6"]
+	7 -> 8 [label=1]
 	9 [label="JOGADA:
-2_drop" fillcolor="#90EE90"]
-	6 -> 9 [label=1]
-	10 [label="Índice: 22" fillcolor="#ADD8E6"]
-	4 -> 10 [label=1]
+3_drop" fillcolor="#90EE90"]
+	8 -> 9 [label=1]
+	10 [label="Índice: 16" fillcolor="#ADD8E6"]
+	8 -> 10 [label=0]
 	11 [label="JOGADA:
 4_drop" fillcolor="#90EE90"]
-	10 -> 11 [label=0]
+	10 -> 11 [label=1]
 	12 [label="JOGADA:
-0_drop" fillcolor="#90EE90"]
-	10 -> 12 [label=2]
+2_drop" fillcolor="#90EE90"]
+	10 -> 12 [label=0]
 	13 [label="JOGADA:
-2_drop" fillcolor="#90EE90"]
-	10 -> 13 [label=1]
-	14 [label="Índice: 29" fillcolor="#ADD8E6"]
-	3 -> 14 [label=0]
-	15 [label="Índice: 39" fillcolor="#ADD8E6"]
-	14 -> 15 [label=2]
+3_pop" fillcolor="#90EE90"]
+	10 -> 13 [label=2]
+	14 [label="JOGADA:
+2_pop" fillcolor="#90EE90"]
+	8 -> 14 [label=2]
+	15 [label="Índice: 38" fillcolor="#ADD8E6"]
+	7 -> 15 [label=0]
 	16 [label="JOGADA:
-5_drop" fillcolor="#90EE90"]
-	15 -> 16 [label=2]
+3_drop" fillcolor="#90EE90"]
+	15 -> 16 [label=1]
 	17 [label="JOGADA:
-4_drop" fillcolor="#90EE90"]
+3_drop" fillcolor="#90EE90"]
 	15 -> 17 [label=0]
-	18 [label="JOGADA:
-4_pop" fillcolor="#90EE90"]
-	15 -> 18 [label=1]
-	19 [label="Índice: 35" fillcolor="#ADD8E6"]
-	14 -> 19 [label=0]
+	18 [label="Índice: 41" fillcolor="#ADD8E6"]
+	15 -> 18 [label=2]
+	19 [label="JOGADA:
+4_drop" fillcolor="#90EE90"]
+	18 -> 19 [label=1]
 	20 [label="JOGADA:
-4_drop" fillcolor="#90EE90"]
-	19 -> 20 [label=2]
+2_drop" fillcolor="#90EE90"]
+	18 -> 20 [label=0]
 	21 [label="JOGADA:
-3_drop" fillcolor="#90EE90"]
-	19 -> 21 [label=0]
-	22 [label="JOGADA:
-3_drop" fillcolor="#90EE90"]
-	19 -> 22 [label=1]
+4_drop" fillcolor="#90EE90"]
+	18 -> 21 [label=2]
+	22 [label="Índice: 22" fillcolor="#ADD8E6"]
+	7 -> 22 [label=2]
 	23 [label="JOGADA:
-3_drop" fillcolor="#90EE90"]
-	14 -> 23 [label=1]
+2_drop" fillcolor="#90EE90"]
+	22 -> 23 [label=1]
 	24 [label="Índice: 36" fillcolor="#ADD8E6"]
-	3 -> 24 [label=1]
-	25 [label="Índice: 41" fillcolor="#ADD8E6"]
-	24 -> 25 [label=0]
+	22 -> 24 [label=0]
+	25 [label="JOGADA:
+1_drop" fillcolor="#90EE90"]
+	24 -> 25 [label=1]
 	26 [label="JOGADA:
-4_drop" fillcolor="#90EE90"]
-	25 -> 26 [label=2]
+2_drop" fillcolor="#90EE90"]
+	24 -> 26 [label=0]
 	27 [label="JOGADA:
-3_drop" fillcolor="#90EE90"]
-	25 -> 27 [label=0]
-	28 [label="JOGADA:
-1_drop" fillcolor="#90EE90"]
-	25 -> 28 [label=1]
-	29 [label="Índice: 35" fillcolor="#ADD8E6"]
-	24 -> 29 [label=2]
-	30 [label="JOGADA:
 5_drop" fillcolor="#90EE90"]
-	29 -> 30 [label=2]
-	31 [label="JOGADA:
-4_drop" fillcolor="#90EE90"]
-	29 -> 31 [label=0]
-	32 [label="JOGADA:
+	24 -> 27 [label=2]
+	28 [label="Índice: 8" fillcolor="#ADD8E6"]
+	22 -> 28 [label=2]
+	29 [label="JOGADA:
 1_drop" fillcolor="#90EE90"]
-	29 -> 32 [label=1]
-	33 [label="Índice: 35" fillcolor="#ADD8E6"]
-	24 -> 33 [label=1]
-	34 [label="JOGADA:
+	28 -> 29 [label=0]
+	30 [label="JOGADA:
+3_drop" fillcolor="#90EE90"]
+	28 -> 30 [label=2]
+	31 [label="Índice: 31" fillcolor="#ADD8E6"]
+	2 -> 31 [label=2]
+	32 [label="Índice: 16" fillcolor="#ADD8E6"]
+	31 -> 32 [label=1]
+	33 [label="JOGADA:
 1_pop" fillcolor="#90EE90"]
-	33 -> 34 [label=0]
-	35 [label="JOGADA:
-0_drop" fillcolor="#90EE90"]
-	33 -> 35 [label=2]
+	32 -> 33 [label=1]
+	34 [label="JOGADA:
+2_drop" fillcolor="#90EE90"]
+	32 -> 34 [label=0]
+	35 [label="Índice: 22" fillcolor="#ADD8E6"]
+	32 -> 35 [label=2]
 	36 [label="JOGADA:
-4_drop" fillcolor="#90EE90"]
-	33 -> 36 [label=1]
-	37 [label="Índice: 33" fillcolor="#ADD8E6"]
-	2 -> 37 [label=2]
-	38 [label="Índice: 36" fillcolor="#ADD8E6"]
-	37 -> 38 [label=2]
+2_pop" fillcolor="#90EE90"]
+	35 -> 36 [label=1]
+	37 [label="JOGADA:
+5_drop" fillcolor="#90EE90"]
+	35 -> 37 [label=0]
+	38 [label="JOGADA:
+6_drop" fillcolor="#90EE90"]
+	35 -> 38 [label=2]
 	39 [label="JOGADA:
-5_pop" fillcolor="#90EE90"]
-	38 -> 39 [label=2]
-	40 [label="JOGADA:
-4_drop" fillcolor="#90EE90"]
-	38 -> 40 [label=0]
-	41 [label="JOGADA:
-2_drop" fillcolor="#90EE90"]
-	38 -> 41 [label=1]
-	42 [label="Índice: 36" fillcolor="#ADD8E6"]
-	37 -> 42 [label=0]
-	43 [label="Índice: 38" fillcolor="#ADD8E6"]
-	42 -> 43 [label=0]
-	44 [label="JOGADA:
-2_drop" fillcolor="#90EE90"]
-	43 -> 44 [label=2]
-	45 [label="JOGADA:
-3_drop" fillcolor="#90EE90"]
-	43 -> 45 [label=0]
-	46 [label="JOGADA:
-3_drop" fillcolor="#90EE90"]
-	43 -> 46 [label=1]
-	47 [label="Índice: 41" fillcolor="#ADD8E6"]
-	42 -> 47 [label=2]
-	48 [label="JOGADA:
-3_drop" fillcolor="#90EE90"]
-	47 -> 48 [label=2]
-	49 [label="JOGADA:
 0_drop" fillcolor="#90EE90"]
-	47 -> 49 [label=0]
+	31 -> 39 [label=0]
+	40 [label="JOGADA:
+0_drop" fillcolor="#90EE90"]
+	31 -> 40 [label=2]
+	41 [label="Índice: 32" fillcolor="#ADD8E6"]
+	1 -> 41 [label=0]
+	42 [label="Índice: 11" fillcolor="#ADD8E6"]
+	41 -> 42 [label=1]
+	43 [label="JOGADA:
+5_drop" fillcolor="#90EE90"]
+	42 -> 43 [label=1]
+	44 [label="Índice: 27" fillcolor="#ADD8E6"]
+	42 -> 44 [label=0]
+	45 [label="Índice: 36" fillcolor="#ADD8E6"]
+	44 -> 45 [label=1]
+	46 [label="JOGADA:
+2_drop" fillcolor="#90EE90"]
+	45 -> 46 [label=1]
+	47 [label="JOGADA:
+2_drop" fillcolor="#90EE90"]
+	45 -> 47 [label=0]
+	48 [label="JOGADA:
+6_drop" fillcolor="#90EE90"]
+	45 -> 48 [label=2]
+	49 [label="Índice: 26" fillcolor="#ADD8E6"]
+	44 -> 49 [label=0]
 	50 [label="JOGADA:
-1_drop" fillcolor="#90EE90"]
-	47 -> 50 [label=1]
-	51 [label="Índice: 38" fillcolor="#ADD8E6"]
-	42 -> 51 [label=1]
+5_drop" fillcolor="#90EE90"]
+	49 -> 50 [label=1]
+	51 [label="JOGADA:
+4_drop" fillcolor="#90EE90"]
+	49 -> 51 [label=0]
 	52 [label="JOGADA:
-2_drop" fillcolor="#90EE90"]
-	51 -> 52 [label=2]
+4_drop" fillcolor="#90EE90"]
+	49 -> 52 [label=2]
 	53 [label="JOGADA:
-1_drop" fillcolor="#90EE90"]
-	51 -> 53 [label=0]
-	54 [label="JOGADA:
-2_drop" fillcolor="#90EE90"]
-	51 -> 54 [label=1]
-	55 [label="Índice: 18" fillcolor="#ADD8E6"]
-	37 -> 55 [label=1]
-	56 [label="JOGADA:
 4_drop" fillcolor="#90EE90"]
-	55 -> 56 [label=0]
-	57 [label="JOGADA:
-2_drop" fillcolor="#90EE90"]
-	55 -> 57 [label=1]
-	58 [label="Índice: 11" fillcolor="#ADD8E6"]
-	2 -> 58 [label=1]
-	59 [label="Índice: 27" fillcolor="#ADD8E6"]
-	58 -> 59 [label=0]
-	60 [label="JOGADA:
-4_drop" fillcolor="#90EE90"]
-	59 -> 60 [label=2]
-	61 [label="Índice: 26" fillcolor="#ADD8E6"]
-	59 -> 61 [label=0]
-	62 [label="JOGADA:
-4_drop" fillcolor="#90EE90"]
-	61 -> 62 [label=2]
-	63 [label="JOGADA:
-4_drop" fillcolor="#90EE90"]
-	61 -> 63 [label=0]
-	64 [label="JOGADA:
-6_drop" fillcolor="#90EE90"]
-	61 -> 64 [label=1]
-	65 [label="Índice: 36" fillcolor="#ADD8E6"]
-	59 -> 65 [label=1]
-	66 [label="JOGADA:
-6_drop" fillcolor="#90EE90"]
-	65 -> 66 [label=2]
-	67 [label="JOGADA:
-1_drop" fillcolor="#90EE90"]
-	65 -> 67 [label=0]
-	68 [label="JOGADA:
-4_pop" fillcolor="#90EE90"]
-	65 -> 68 [label=1]
-	69 [label="Índice: 26" fillcolor="#ADD8E6"]
-	58 -> 69 [label=2]
-	70 [label="JOGADA:
+	44 -> 53 [label=2]
+	54 [label="Índice: 26" fillcolor="#ADD8E6"]
+	42 -> 54 [label=2]
+	55 [label="JOGADA:
 3_drop" fillcolor="#90EE90"]
-	69 -> 70 [label=2]
-	71 [label="Índice: 33" fillcolor="#ADD8E6"]
-	69 -> 71 [label=0]
+	54 -> 55 [label=1]
+	56 [label="Índice: 33" fillcolor="#ADD8E6"]
+	54 -> 56 [label=0]
+	57 [label="JOGADA:
+6_drop" fillcolor="#90EE90"]
+	56 -> 57 [label=1]
+	58 [label="JOGADA:
+5_drop" fillcolor="#90EE90"]
+	56 -> 58 [label=0]
+	59 [label="JOGADA:
+2_drop" fillcolor="#90EE90"]
+	56 -> 59 [label=2]
+	60 [label="JOGADA:
+3_drop" fillcolor="#90EE90"]
+	54 -> 60 [label=2]
+	61 [label="Índice: 38" fillcolor="#ADD8E6"]
+	41 -> 61 [label=0]
+	62 [label="Índice: 36" fillcolor="#ADD8E6"]
+	61 -> 62 [label=1]
+	63 [label="Índice: 35" fillcolor="#ADD8E6"]
+	62 -> 63 [label=1]
+	64 [label="JOGADA:
+4_drop" fillcolor="#90EE90"]
+	63 -> 64 [label=1]
+	65 [label="JOGADA:
+0_drop" fillcolor="#90EE90"]
+	63 -> 65 [label=0]
+	66 [label="JOGADA:
+4_drop" fillcolor="#90EE90"]
+	63 -> 66 [label=2]
+	67 [label="Índice: 39" fillcolor="#ADD8E6"]
+	62 -> 67 [label=0]
+	68 [label="JOGADA:
+2_drop" fillcolor="#90EE90"]
+	67 -> 68 [label=1]
+	69 [label="JOGADA:
+3_drop" fillcolor="#90EE90"]
+	67 -> 69 [label=0]
+	70 [label="JOGADA:
+4_drop" fillcolor="#90EE90"]
+	67 -> 70 [label=2]
+	71 [label="Índice: 35" fillcolor="#ADD8E6"]
+	62 -> 71 [label=2]
 	72 [label="JOGADA:
 1_drop" fillcolor="#90EE90"]
-	71 -> 72 [label=2]
+	71 -> 72 [label=1]
 	73 [label="JOGADA:
-3_drop" fillcolor="#90EE90"]
+4_drop" fillcolor="#90EE90"]
 	71 -> 73 [label=0]
 	74 [label="JOGADA:
-6_drop" fillcolor="#90EE90"]
-	71 -> 74 [label=1]
-	75 [label="JOGADA:
-3_drop" fillcolor="#90EE90"]
-	69 -> 75 [label=1]
-	76 [label="JOGADA:
 5_drop" fillcolor="#90EE90"]
-	58 -> 76 [label=1]
-	77 [label="Índice: 28" fillcolor="#ADD8E6"]
-	1 -> 77 [label=2]
-	78 [label="Índice: 41" fillcolor="#ADD8E6"]
-	77 -> 78 [label=2]
-	79 [label="Índice: 40" fillcolor="#ADD8E6"]
-	78 -> 79 [label=2]
-	80 [label="JOGADA:
-0_pop" fillcolor="#90EE90"]
-	79 -> 80 [label=2]
-	81 [label="JOGADA:
-1_drop" fillcolor="#90EE90"]
-	79 -> 81 [label=0]
-	82 [label="JOGADA:
-1_drop" fillcolor="#90EE90"]
-	79 -> 82 [label=1]
-	83 [label="Índice: 22" fillcolor="#ADD8E6"]
-	78 -> 83 [label=0]
-	84 [label="JOGADA:
-1_drop" fillcolor="#90EE90"]
-	83 -> 84 [label=2]
-	85 [label="JOGADA:
-1_drop" fillcolor="#90EE90"]
-	83 -> 85 [label=0]
-	86 [label="JOGADA:
+	71 -> 74 [label=2]
+	75 [label="Índice: 29" fillcolor="#ADD8E6"]
+	61 -> 75 [label=0]
+	76 [label="JOGADA:
+2_drop" fillcolor="#90EE90"]
+	75 -> 76 [label=1]
+	77 [label="Índice: 41" fillcolor="#ADD8E6"]
+	75 -> 77 [label=0]
+	78 [label="JOGADA:
 3_drop" fillcolor="#90EE90"]
-	83 -> 86 [label=1]
+	77 -> 78 [label=1]
+	79 [label="JOGADA:
+3_drop" fillcolor="#90EE90"]
+	77 -> 79 [label=0]
+	80 [label="JOGADA:
+4_drop" fillcolor="#90EE90"]
+	77 -> 80 [label=2]
+	81 [label="Índice: 39" fillcolor="#ADD8E6"]
+	75 -> 81 [label=2]
+	82 [label="JOGADA:
+5_drop" fillcolor="#90EE90"]
+	81 -> 82 [label=1]
+	83 [label="JOGADA:
+4_drop" fillcolor="#90EE90"]
+	81 -> 83 [label=0]
+	84 [label="JOGADA:
+5_drop" fillcolor="#90EE90"]
+	81 -> 84 [label=2]
+	85 [label="Índice: 31" fillcolor="#ADD8E6"]
+	61 -> 85 [label=2]
+	86 [label="Índice: 22" fillcolor="#ADD8E6"]
+	85 -> 86 [label=1]
 	87 [label="JOGADA:
 2_drop" fillcolor="#90EE90"]
-	78 -> 87 [label=1]
-	88 [label="Índice: 10" fillcolor="#ADD8E6"]
-	77 -> 88 [label=0]
-	89 [label="Índice: 33" fillcolor="#ADD8E6"]
-	88 -> 89 [label=2]
-	90 [label="JOGADA:
-5_pop" fillcolor="#90EE90"]
-	89 -> 90 [label=2]
-	91 [label="JOGADA:
+	86 -> 87 [label=1]
+	88 [label="JOGADA:
+1_drop" fillcolor="#90EE90"]
+	86 -> 88 [label=0]
+	89 [label="JOGADA:
 0_drop" fillcolor="#90EE90"]
-	89 -> 91 [label=0]
+	86 -> 89 [label=2]
+	90 [label="Índice: 33" fillcolor="#ADD8E6"]
+	85 -> 90 [label=0]
+	91 [label="JOGADA:
+2_drop" fillcolor="#90EE90"]
+	90 -> 91 [label=1]
 	92 [label="JOGADA:
-4_drop" fillcolor="#90EE90"]
-	89 -> 92 [label=1]
-	93 [label="Índice: 18" fillcolor="#ADD8E6"]
-	88 -> 93 [label=0]
-	94 [label="Índice: 33" fillcolor="#ADD8E6"]
-	93 -> 94 [label=2]
+2_drop" fillcolor="#90EE90"]
+	90 -> 92 [label=0]
+	93 [label="JOGADA:
+3_drop" fillcolor="#90EE90"]
+	90 -> 93 [label=2]
+	94 [label="Índice: 36" fillcolor="#ADD8E6"]
+	85 -> 94 [label=2]
 	95 [label="JOGADA:
 3_drop" fillcolor="#90EE90"]
-	94 -> 95 [label=2]
+	94 -> 95 [label=1]
 	96 [label="JOGADA:
-5_drop" fillcolor="#90EE90"]
+1_drop" fillcolor="#90EE90"]
 	94 -> 96 [label=0]
 	97 [label="JOGADA:
-5_drop" fillcolor="#90EE90"]
-	94 -> 97 [label=1]
-	98 [label="Índice: 36" fillcolor="#ADD8E6"]
-	93 -> 98 [label=0]
-	99 [label="JOGADA:
-3_drop" fillcolor="#90EE90"]
-	98 -> 99 [label=2]
+4_drop" fillcolor="#90EE90"]
+	94 -> 97 [label=2]
+	98 [label="Índice: 18" fillcolor="#ADD8E6"]
+	41 -> 98 [label=2]
+	99 [label="Índice: 33" fillcolor="#ADD8E6"]
+	98 -> 99 [label=1]
 	100 [label="JOGADA:
-4_drop" fillcolor="#90EE90"]
-	98 -> 100 [label=0]
-	101 [label="JOGADA:
-4_drop" fillcolor="#90EE90"]
-	98 -> 101 [label=1]
-	102 [label="Índice: 33" fillcolor="#ADD8E6"]
-	93 -> 102 [label=1]
-	103 [label="JOGADA:
-4_drop" fillcolor="#90EE90"]
-	102 -> 103 [label=2]
-	104 [label="JOGADA:
-1_drop" fillcolor="#90EE90"]
-	102 -> 104 [label=0]
-	105 [label="JOGADA:
 6_drop" fillcolor="#90EE90"]
-	102 -> 105 [label=1]
-	106 [label="Índice: 12" fillcolor="#ADD8E6"]
-	88 -> 106 [label=1]
-	107 [label="JOGADA:
-4_drop" fillcolor="#90EE90"]
-	106 -> 107 [label=2]
-	108 [label="Índice: 33" fillcolor="#ADD8E6"]
-	106 -> 108 [label=0]
-	109 [label="JOGADA:
-5_drop" fillcolor="#90EE90"]
-	108 -> 109 [label=2]
-	110 [label="JOGADA:
-5_drop" fillcolor="#90EE90"]
-	108 -> 110 [label=0]
-	111 [label="JOGADA:
-5_drop" fillcolor="#90EE90"]
-	108 -> 111 [label=1]
-	112 [label="JOGADA:
-1_drop" fillcolor="#90EE90"]
-	106 -> 112 [label=1]
-	113 [label="Índice: 23" fillcolor="#ADD8E6"]
-	77 -> 113 [label=1]
-	114 [label="Índice: 11" fillcolor="#ADD8E6"]
-	113 -> 114 [label=2]
-	115 [label="JOGADA:
-0_drop" fillcolor="#90EE90"]
-	114 -> 115 [label=2]
-	116 [label="JOGADA:
+	99 -> 100 [label=1]
+	101 [label="JOGADA:
 3_drop" fillcolor="#90EE90"]
-	114 -> 116 [label=0]
-	117 [label="Índice: 37" fillcolor="#ADD8E6"]
-	113 -> 117 [label=0]
-	118 [label="JOGADA:
+	99 -> 101 [label=0]
+	102 [label="JOGADA:
 2_drop" fillcolor="#90EE90"]
-	117 -> 118 [label=2]
-	119 [label="JOGADA:
+	99 -> 102 [label=2]
+	103 [label="Índice: 24" fillcolor="#ADD8E6"]
+	98 -> 103 [label=0]
+	104 [label="JOGADA:
 4_drop" fillcolor="#90EE90"]
-	117 -> 119 [label=1]
-	120 [label="Índice: 2" fillcolor="#ADD8E6"]
-	113 -> 120 [label=1]
-	121 [label="Índice: 24" fillcolor="#ADD8E6"]
-	120 -> 121 [label=0]
-	122 [label="JOGADA:
+	103 -> 104 [label=1]
+	105 [label="Índice: 25" fillcolor="#ADD8E6"]
+	103 -> 105 [label=0]
+	106 [label="JOGADA:
 3_drop" fillcolor="#90EE90"]
-	121 -> 122 [label=0]
+	105 -> 106 [label=1]
+	107 [label="JOGADA:
+2_drop" fillcolor="#90EE90"]
+	105 -> 107 [label=0]
+	108 [label="JOGADA:
+4_drop" fillcolor="#90EE90"]
+	105 -> 108 [label=2]
+	109 [label="JOGADA:
+1_drop" fillcolor="#90EE90"]
+	103 -> 109 [label=2]
+	110 [label="JOGADA:
+6_drop" fillcolor="#90EE90"]
+	98 -> 110 [label=2]
+	111 [label="Índice: 28" fillcolor="#ADD8E6"]
+	1 -> 111 [label=2]
+	112 [label="Índice: 8" fillcolor="#ADD8E6"]
+	111 -> 112 [label=1]
+	113 [label="Índice: 25" fillcolor="#ADD8E6"]
+	112 -> 113 [label=1]
+	114 [label="JOGADA:
+4_drop" fillcolor="#90EE90"]
+	113 -> 114 [label=1]
+	115 [label="JOGADA:
+4_drop" fillcolor="#90EE90"]
+	113 -> 115 [label=0]
+	116 [label="JOGADA:
+4_pop" fillcolor="#90EE90"]
+	113 -> 116 [label=2]
+	117 [label="Índice: 23" fillcolor="#ADD8E6"]
+	112 -> 117 [label=0]
+	118 [label="JOGADA:
+3_pop" fillcolor="#90EE90"]
+	117 -> 118 [label=1]
+	119 [label="JOGADA:
+2_drop" fillcolor="#90EE90"]
+	117 -> 119 [label=0]
+	120 [label="JOGADA:
+3_drop" fillcolor="#90EE90"]
+	117 -> 120 [label=2]
+	121 [label="Índice: 32" fillcolor="#ADD8E6"]
+	112 -> 121 [label=2]
+	122 [label="JOGADA:
+5_drop" fillcolor="#90EE90"]
+	121 -> 122 [label=1]
 	123 [label="JOGADA:
 2_drop" fillcolor="#90EE90"]
-	121 -> 123 [label=2]
+	121 -> 123 [label=0]
 	124 [label="JOGADA:
-1_drop" fillcolor="#90EE90"]
-	121 -> 124 [label=1]
-	125 [label="Índice: 25" fillcolor="#ADD8E6"]
-	120 -> 125 [label=2]
-	126 [label="JOGADA:
-4_drop" fillcolor="#90EE90"]
-	125 -> 126 [label=0]
-	127 [label="JOGADA:
-4_pop" fillcolor="#90EE90"]
-	125 -> 127 [label=2]
+2_drop" fillcolor="#90EE90"]
+	121 -> 124 [label=2]
+	125 [label="Índice: 24" fillcolor="#ADD8E6"]
+	111 -> 125 [label=0]
+	126 [label="Índice: 16" fillcolor="#ADD8E6"]
+	125 -> 126 [label=1]
+	127 [label="Índice: 22" fillcolor="#ADD8E6"]
+	126 -> 127 [label=1]
 	128 [label="JOGADA:
-4_drop" fillcolor="#90EE90"]
-	125 -> 128 [label=1]
-	129 [label="Índice: 26" fillcolor="#ADD8E6"]
-	1 -> 129 [label=1]
-	130 [label="Índice: 24" fillcolor="#ADD8E6"]
-	129 -> 130 [label=2]
-	131 [label="JOGADA:
-5_pop" fillcolor="#90EE90"]
-	130 -> 131 [label=2]
-	132 [label="Índice: 38" fillcolor="#ADD8E6"]
-	130 -> 132 [label=0]
-	133 [label="JOGADA:
-0_drop" fillcolor="#90EE90"]
-	132 -> 133 [label=0]
-	134 [label="Índice: 27" fillcolor="#ADD8E6"]
-	132 -> 134 [label=2]
-	135 [label="JOGADA:
-6_drop" fillcolor="#90EE90"]
-	134 -> 135 [label=0]
-	136 [label="JOGADA:
+5_drop" fillcolor="#90EE90"]
+	127 -> 128 [label=1]
+	129 [label="JOGADA:
+5_drop" fillcolor="#90EE90"]
+	127 -> 129 [label=0]
+	130 [label="JOGADA:
 3_drop" fillcolor="#90EE90"]
-	134 -> 136 [label=2]
+	127 -> 130 [label=2]
+	131 [label="Índice: 35" fillcolor="#ADD8E6"]
+	126 -> 131 [label=0]
+	132 [label="JOGADA:
+2_drop" fillcolor="#90EE90"]
+	131 -> 132 [label=1]
+	133 [label="JOGADA:
+2_drop" fillcolor="#90EE90"]
+	131 -> 133 [label=0]
+	134 [label="JOGADA:
+0_drop" fillcolor="#90EE90"]
+	131 -> 134 [label=2]
+	135 [label="Índice: 26" fillcolor="#ADD8E6"]
+	126 -> 135 [label=2]
+	136 [label="JOGADA:
+3_pop" fillcolor="#90EE90"]
+	135 -> 136 [label=1]
 	137 [label="JOGADA:
-1_drop" fillcolor="#90EE90"]
-	134 -> 137 [label=1]
+5_drop" fillcolor="#90EE90"]
+	135 -> 137 [label=0]
 	138 [label="JOGADA:
 3_drop" fillcolor="#90EE90"]
-	132 -> 138 [label=1]
-	139 [label="Índice: 15" fillcolor="#ADD8E6"]
-	130 -> 139 [label=1]
-	140 [label="JOGADA:
-2_drop" fillcolor="#90EE90"]
-	139 -> 140 [label=2]
+	135 -> 138 [label=2]
+	139 [label="Índice: 18" fillcolor="#ADD8E6"]
+	125 -> 139 [label=0]
+	140 [label="Índice: 41" fillcolor="#ADD8E6"]
+	139 -> 140 [label=1]
 	141 [label="JOGADA:
-1_drop" fillcolor="#90EE90"]
-	139 -> 141 [label=0]
-	142 [label="Índice: 16" fillcolor="#ADD8E6"]
-	139 -> 142 [label=1]
+6_drop" fillcolor="#90EE90"]
+	140 -> 141 [label=1]
+	142 [label="JOGADA:
+6_drop" fillcolor="#90EE90"]
+	140 -> 142 [label=0]
 	143 [label="JOGADA:
-2_drop" fillcolor="#90EE90"]
-	142 -> 143 [label=2]
-	144 [label="JOGADA:
-3_drop" fillcolor="#90EE90"]
-	142 -> 144 [label=0]
+4_drop" fillcolor="#90EE90"]
+	140 -> 143 [label=2]
+	144 [label="Índice: 29" fillcolor="#ADD8E6"]
+	139 -> 144 [label=0]
 	145 [label="JOGADA:
-4_pop" fillcolor="#90EE90"]
-	142 -> 145 [label=1]
-	146 [label="Índice: 29" fillcolor="#ADD8E6"]
-	129 -> 146 [label=0]
-	147 [label="Índice: 23" fillcolor="#ADD8E6"]
-	146 -> 147 [label=2]
-	148 [label="JOGADA:
+6_drop" fillcolor="#90EE90"]
+	144 -> 145 [label=1]
+	146 [label="JOGADA:
 3_drop" fillcolor="#90EE90"]
-	147 -> 148 [label=2]
-	149 [label="Índice: 40" fillcolor="#ADD8E6"]
-	147 -> 149 [label=0]
+	144 -> 146 [label=0]
+	147 [label="JOGADA:
+4_drop" fillcolor="#90EE90"]
+	144 -> 147 [label=2]
+	148 [label="Índice: 40" fillcolor="#ADD8E6"]
+	139 -> 148 [label=2]
+	149 [label="JOGADA:
+5_drop" fillcolor="#90EE90"]
+	148 -> 149 [label=1]
 	150 [label="JOGADA:
 2_drop" fillcolor="#90EE90"]
-	149 -> 150 [label=2]
+	148 -> 150 [label=0]
 	151 [label="JOGADA:
-5_drop" fillcolor="#90EE90"]
-	149 -> 151 [label=0]
-	152 [label="JOGADA:
-5_drop" fillcolor="#90EE90"]
-	149 -> 152 [label=1]
-	153 [label="Índice: 42" fillcolor="#ADD8E6"]
-	147 -> 153 [label=1]
-	154 [label="JOGADA:
-6_drop" fillcolor="#90EE90"]
-	153 -> 154 [label=2]
-	155 [label="JOGADA:
-5_drop" fillcolor="#90EE90"]
-	153 -> 155 [label=1]
-	156 [label="Índice: 36" fillcolor="#ADD8E6"]
-	146 -> 156 [label=0]
-	157 [label="Índice: 16" fillcolor="#ADD8E6"]
-	156 -> 157 [label=0]
-	158 [label="JOGADA:
-4_drop" fillcolor="#90EE90"]
-	157 -> 158 [label=2]
-	159 [label="JOGADA:
-2_drop" fillcolor="#90EE90"]
-	157 -> 159 [label=0]
-	160 [label="JOGADA:
-4_drop" fillcolor="#90EE90"]
-	157 -> 160 [label=1]
-	161 [label="Índice: 32" fillcolor="#ADD8E6"]
-	156 -> 161 [label=2]
-	162 [label="JOGADA:
-5_drop" fillcolor="#90EE90"]
-	161 -> 162 [label=2]
-	163 [label="JOGADA:
 3_drop" fillcolor="#90EE90"]
-	161 -> 163 [label=0]
-	164 [label="JOGADA:
-4_drop" fillcolor="#90EE90"]
-	161 -> 164 [label=1]
+	148 -> 151 [label=2]
+	152 [label="Índice: 25" fillcolor="#ADD8E6"]
+	125 -> 152 [label=2]
+	153 [label="JOGADA:
+3_pop" fillcolor="#90EE90"]
+	152 -> 153 [label=1]
+	154 [label="Índice: 34" fillcolor="#ADD8E6"]
+	152 -> 154 [label=0]
+	155 [label="JOGADA:
+6_drop" fillcolor="#90EE90"]
+	154 -> 155 [label=1]
+	156 [label="JOGADA:
+4_pop" fillcolor="#90EE90"]
+	154 -> 156 [label=0]
+	157 [label="JOGADA:
+1_drop" fillcolor="#90EE90"]
+	154 -> 157 [label=2]
+	158 [label="JOGADA:
+6_drop" fillcolor="#90EE90"]
+	152 -> 158 [label=2]
+	159 [label="Índice: 21" fillcolor="#ADD8E6"]
+	111 -> 159 [label=2]
+	160 [label="Índice: 40" fillcolor="#ADD8E6"]
+	159 -> 160 [label=1]
+	161 [label="JOGADA:
+0_pop" fillcolor="#90EE90"]
+	160 -> 161 [label=1]
+	162 [label="JOGADA:
+3_drop" fillcolor="#90EE90"]
+	160 -> 162 [label=0]
+	163 [label="JOGADA:
+0_pop" fillcolor="#90EE90"]
+	160 -> 163 [label=2]
+	164 [label="Índice: 36" fillcolor="#ADD8E6"]
+	159 -> 164 [label=0]
 	165 [label="JOGADA:
-1_drop" fillcolor="#90EE90"]
-	156 -> 165 [label=1]
-	166 [label="Índice: 31" fillcolor="#ADD8E6"]
-	146 -> 166 [label=1]
-	167 [label="Índice: 2" fillcolor="#ADD8E6"]
-	166 -> 167 [label=2]
-	168 [label="JOGADA:
-2_drop" fillcolor="#90EE90"]
-	167 -> 168 [label=0]
-	169 [label="JOGADA:
-0_drop" fillcolor="#90EE90"]
-	167 -> 169 [label=1]
-	170 [label="JOGADA:
-0_drop" fillcolor="#90EE90"]
-	166 -> 170 [label=0]
-	171 [label="JOGADA:
 2_pop" fillcolor="#90EE90"]
-	166 -> 171 [label=1]
-	172 [label="Índice: 21" fillcolor="#ADD8E6"]
-	129 -> 172 [label=1]
-	173 [label="JOGADA:
-5_pop" fillcolor="#90EE90"]
-	172 -> 173 [label=0]
-	174 [label="Índice: 24" fillcolor="#ADD8E6"]
-	172 -> 174 [label=2]
-	175 [label="JOGADA:
+	164 -> 165 [label=1]
+	166 [label="JOGADA:
+3_pop" fillcolor="#90EE90"]
+	164 -> 166 [label=0]
+	167 [label="JOGADA:
 1_drop" fillcolor="#90EE90"]
-	174 -> 175 [label=0]
-	176 [label="JOGADA:
-1_pop" fillcolor="#90EE90"]
-	174 -> 176 [label=1]
-	177 [label="JOGADA:
-6_pop" fillcolor="#90EE90"]
-	172 -> 177 [label=1]
+	164 -> 167 [label=2]
+	168 [label="Índice: 22" fillcolor="#ADD8E6"]
+	159 -> 168 [label=2]
+	169 [label="JOGADA:
+2_drop" fillcolor="#90EE90"]
+	168 -> 169 [label=1]
+	170 [label="JOGADA:
+1_drop" fillcolor="#90EE90"]
+	168 -> 170 [label=0]
+	171 [label="JOGADA:
+2_drop" fillcolor="#90EE90"]
+	168 -> 171 [label=2]
 }
