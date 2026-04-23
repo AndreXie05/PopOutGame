@@ -87,6 +87,8 @@ class PopOutBoard:
         p1_win = self.check_four_in_a_row(1)
         p2_win = self.check_four_in_a_row(2)
         
+        # REGRA 1
+        #----------------------------------------------------------
         if self.last_move and self.last_move[1] == 'pop':
             if p1_win and p2_win:
                 # Quem fez o pop é o adversário do current_player
@@ -97,7 +99,7 @@ class PopOutBoard:
         if p2_win:
             return 2
         return None
-
+        #----------------------------------------------------------
     def is_terminal(self):
         if self.get_winner() is not None:
             return True
