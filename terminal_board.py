@@ -1,5 +1,5 @@
 from moves import PopOutBoard 
-from mcts5 import mcts 
+from mcts4 import mcts 
 from dataset import save_example 
 from ID3_Tree import ID3 
 from popout_ID3_Tree import carregar_dataset_jogo 
@@ -42,15 +42,18 @@ def get_move(board):
             print("Erro: Insere um número válido para a coluna (0-6).")
 
 def run_terminal():
-    board = PopOutBoard() #
+    board = PopOutBoard()
 
-    print("Modo Terminal: 1-HvIA | 2-HvH | 3- MCTS vs Árvore")
-    mode = int(input("Escolhe: "))
-
-    # --- Se for o modo 3, treinamos a árvore antes de começar ---
-    tree = None
-    modelo_id3 = None
-    fallback_move = None
+    while True: # Loop para garantir uma escolha válida
+        print("\nModo Terminal: 1-HvIA | 2-HvH | 3- MCTS vs Árvore")
+        try:
+            mode = int(input("Escolhe (1-3): "))
+            if mode in [1, 2, 3]:
+                break # Sai do loop se a escolha for correta
+            else:
+                print("Escolha inválida! Por favor, escolhe 1, 2 ou 3.")
+        except ValueError:
+            print("Erro: Insere um número (1, 2 ou 3).")
     if mode == 3:
         iniciar_duelo() # Chama o ficheiro novo
         return # Termina para não correr o loop antigo
@@ -58,8 +61,6 @@ def run_terminal():
     historico_estados = {}
     while not board.is_terminal(): #
         board.display() #
-        
-        # ... (mantém o código do histórico de estados e empate por repetição) ...
 
         # Determinar quem joga
         if mode == 1:
@@ -90,8 +91,8 @@ def run_terminal():
                     node = mcts(board, iterations=100) #
                     move = node.move
             else:
-                # Caso padrão: MCTS (Jogador 1 no modo 3, ou Jogador 2 no modo 1)
-                print(f"IA (MCTS - Jogador {board.current_player})...")
+                # Caso padrão: MCTS4 (Jogador 1 no modo 3, ou Jogador 2 no modo 1)
+                print(f"IA (MCTS4 - Jogador {board.current_player})...")
                 node = mcts(board, iterations=300) #
                 move = node.move
                 save_example(board, move) #
