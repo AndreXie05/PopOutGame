@@ -26,5 +26,5 @@ def simular_jogos(quantidade_jogos=20):
 if __name__ == "__main__":
     # Vamos gerar 20 jogos (deve dar umas 600 a 800 linhas novas no CSV)
     # Podes ir beber um café enquanto isto roda!
-    simular_jogos(20)
+    simular_jogos(200)
     print("Geração de dados terminada. Corre o popout_ID3_Tree.py agora!")
