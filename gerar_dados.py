@@ -1,5 +1,5 @@
 from moves import PopOutBoard
-from mcts4 import mcts
+from mcts5 import mcts
 from dataset import save_example
 
 def simular_jogos(quantidade_jogos=20):

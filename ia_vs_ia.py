@@ -1,5 +1,5 @@
 from moves import PopOutBoard
-from mcts4 import mcts
+from mcts5 import mcts
 from ID3_Tree import ID3
 from popout_ID3_Tree import carregar_dataset_jogo
 from collections import Counter

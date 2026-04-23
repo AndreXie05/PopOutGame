@@ -1,5 +1,5 @@
 from moves import PopOutBoard 
-from mcts4 import mcts 
+from mcts5 import mcts 
 from dataset import save_example 
 from ID3_Tree import ID3 
 from popout_ID3_Tree import carregar_dataset_jogo 
@@ -90,8 +90,8 @@ def run_terminal():
                     node = mcts(board, iterations=100) #
                     move = node.move
             else:
-                # Caso padrão: MCTS4 (Jogador 1 no modo 3, ou Jogador 2 no modo 1)
-                print(f"IA (MCTS4 - Jogador {board.current_player})...")
+                # Caso padrão: MCTS (Jogador 1 no modo 3, ou Jogador 2 no modo 1)
+                print(f"IA (MCTS - Jogador {board.current_player})...")
                 node = mcts(board, iterations=300) #
                 move = node.move
                 save_example(board, move) #
