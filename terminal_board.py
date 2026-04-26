@@ -121,7 +121,7 @@ def run_terminal():
             # 2. Determinar qual IA joga
             if mode == 2: # No modo 2, o Jogador 2 é sempre a Árvore
                 print(f"IA (Árvore - Jogador {board.current_player})...")
-                feat = [str(c) for r in board.board for c in r] + [str(board.current_player)]
+                feat = [float(c) for r in board.board for c in r] + [float(board.current_player)]
                 previsao = modelo_id3.prever(tree, feat, classe_default=fallback)
                 
                 if isinstance(previsao, str) and "_" in previsao:
