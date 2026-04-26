@@ -7,8 +7,10 @@
 - André Chen Xie
 - Beatriz Morais Vieira
 - Manuel Henrique da Silva Mota 
-- *Inteligência Artificial e Ciências de Dados* 
-- *Data:* 26 de abril de 2026
+
+## Curso
+
+*Inteligência Artificial e Ciências de Dados* 
 
 ## Descrição do Projeto
 
@@ -16,11 +18,11 @@ Implementação de um agente capaz de jogar **PopOut** (uma variante do Connect-
 
 ## Regras e Mecânica de Jogo:
 
-O PopOut segue a abse do Connect-4, mas com mecânicas adicionais que aumentam a complexidade estratégica:
+O PopOut segue a base do Connect-4, mas com mecânicas adicionais que aumentam a complexidade estratégica:
 - **Drop**: Jogar uma peça no topo de uma coluna, caindo até a posição livre mais baixa.
 - **Pop**: Remover uma peça da própria cor da base do tabuleiro. Como consequência, todas as peças acima dessa coluna descem uma posição.
 
-**Regras Especiais:*
+*Regras Especiais:*
 - **Regra 1**: Se um Pop resultar em quatro em linha, para ambos os jogadores simultaneamente, a vitória é atribuída ao jogador que fez o Pop.
 - **Regra 2**: Se um tabuleiro estiver cheio, o jogador da vez tem a opção de empate ou de continuar a jogar, fazendo Pop.
 - **Regra 3**: Se um estado repetir 3 vezes, o jogo termina empatado.
@@ -33,7 +35,7 @@ O PopOut segue a abse do Connect-4, mas com mecânicas adicionais que aumentam a
 - **Modo 5**: IA (MCTS5) vs IA (MCTS5)
 
 ```bash
-# 1. Instalar dependencias
+# 1. Instalar dependências
 pip install numpy graphviz
 
 # 2. Como executar
@@ -43,10 +45,10 @@ python gerar_dados.py
 # Treinar e Avaliar a Árvore de Decisão (ID3)
 python popout_ID3_Tree.py
 
-# Iniciar menu princial
+# Iniciar menu principal
 python main.py
 ```
 
 ## Como jogar:
--> Selecionar a coluna (0-6)
--> Se pretende fazer Drop ('**d**') ou se pretende fazer Pop ('**p**')
+- Selecionar a coluna (0-6)
+- Se pretende fazer Drop ('**d**') ou se pretende fazer Pop ('**p**')
