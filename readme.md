@@ -15,20 +15,20 @@ Implementação de um agente capaz de jogar **PopOut** (uma variante do Connect-
 ## Regras e Mecânica de Jogo:
 
 O PopOut segue a abse do Connect-4, mas com mecânicas adicionais que aumentam a complexidade estratégica:
-  -> **Drop**: Jogar uma peça no topo de uma coluna, caindo até a posição livre mais baixa.
-  -> **Pop**: Remover uma peça da própria cor da base do tabuleiro. Como consequência, todas as peças acima dessa coluna descem uma posição.
+> **Drop**: Jogar uma peça no topo de uma coluna, caindo até a posição livre mais baixa.
+-> **Pop**: Remover uma peça da própria cor da base do tabuleiro. Como consequência, todas as peças acima dessa coluna descem uma posição.
 
 Regras Especiais:
-  -> **Regra 1**: Se um Pop resultar em quatro em linha, para ambos os jogadores simultaneamente, a vitória é atribuída ao jogador que fez o Pop.
-  -> **Regra 2**: Se um tabuleiro estiver cheio, o jogador da vez tem a opção de empate ou de continuar a jogar, fazendo Pop.
-  -> **Regra 3**: Se um estado repetir 3 vezes, o jogo termina empatado.
+-> **Regra 1**: Se um Pop resultar em quatro em linha, para ambos os jogadores simultaneamente, a vitória é atribuída ao jogador que fez o Pop.
+-> **Regra 2**: Se um tabuleiro estiver cheio, o jogador da vez tem a opção de empate ou de continuar a jogar, fazendo Pop.
+-> **Regra 3**: Se um estado repetir 3 vezes, o jogo termina empatado.
 
 Modos de jogo:
-  -> **Modo 1**: Humano vs IA (MCTS5)
-  -> **Modo 2**: Humano vs IA (DT)
-  -> **Modo 3**: IA (MCTS5) vs IA (DT)
-  -> **Modo 4**: Humano vs Humano
-  -> **Modo 5**: IA (MCTS5) vs IA (MCTS5)
+-> **Modo 1**: Humano vs IA (MCTS5)
+-> **Modo 2**: Humano vs IA (DT)
+-> **Modo 3**: IA (MCTS5) vs IA (DT)
+-> **Modo 4**: Humano vs Humano
+-> **Modo 5**: IA (MCTS5) vs IA (MCTS5)
 
 ```bash
 # 1. Instalar dependencias
@@ -47,5 +47,5 @@ python main.py
 ```
 
 ## Como jogar:
-  -> Selecionar a coluna (0-6)
-  -> Se pretende fazer Drop ('**d**') ou se pretende fazer Pop ('**p**')
+-> Selecionar a coluna (0-6)
+-> Se pretende fazer Drop ('**d**') ou se pretende fazer Pop ('**p**')
