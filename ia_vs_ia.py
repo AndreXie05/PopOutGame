@@ -34,7 +34,7 @@ def iniciar_duelo():
         else:
             print("Árvore de Decisão a decidir...")
             # Prepara os dados para a árvore
-            features = [str(cell) for row in board.board for cell in row] + [str(board.current_player)]
+            features = [float(cell) for row in board.board for cell in row] + [float(board.current_player)]
             previsao = modelo_id3.prever(tree, features, classe_default=fallback)
             
             # Validação do formato (ex: "3_drop")
