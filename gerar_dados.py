@@ -1,8 +1,8 @@
 from moves import PopOutBoard
-from mcts5 import mcts
+from mcts6 import get_best_move_mcts
 from dataset import save_example
 
-def simular_jogos(quantidade_jogos=20):
+def simular_jogos(quantidade_jogos=200):
     print(f"A iniciar simulação de {quantidade_jogos} jogos IA vs IA...")
     
     for i in range(quantidade_jogos):
@@ -10,11 +10,9 @@ def simular_jogos(quantidade_jogos=20):
         jogadas_neste_jogo = 0
         
         while not board.is_terminal():
-            # MCTS pensa (com menos iterações para ser mais rápido na geração de dados)
-            node = mcts(board, iterations=40) 
-            move = node.move
+            move = get_best_move_mcts(board, total_iterations=200) 
             
-            # Guarda no dataset
+            # Guarda no dataset (o save_example já está perfeito)
             save_example(board, move)
             
             # Aplica a jogada e continua
@@ -24,7 +22,6 @@ def simular_jogos(quantidade_jogos=20):
         print(f"Jogo {i+1}/{quantidade_jogos} concluído! ({jogadas_neste_jogo} jogadas registadas)")
 
 if __name__ == "__main__":
-    # Vamos gerar 20 jogos (deve dar umas 600 a 800 linhas novas no CSV)
-    # Podes ir beber um café enquanto isto roda!
+    # Gerar 200 jogos treinar a Árvore de Decisão
     simular_jogos(200)
     print("Geração de dados terminada. Corre o popout_ID3_Tree.py agora!")

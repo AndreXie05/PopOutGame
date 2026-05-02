@@ -37,10 +37,17 @@ class Node:
         self.max_children = max_children
         
         self.untried_moves = state.get_legal_moves()
-        random.shuffle(self.untried_moves)
         
-        if self.max_children and len(self.untried_moves) > self.max_children:
-            self.untried_moves = self.untried_moves[:self.max_children]
+        if self.untried_moves:
+            # Assumindo que a tua jogada é um tuplo (coluna, tipo), ex: (3, 'drop')
+            # Calculamos o centro dinamicamente consoante a largura do tabuleiro
+            centro = len(state.board[0]) // 2 
+            
+            # Ordena por: 1º Proximidade ao centro, 2º Aleatoriedade para desempatar
+            self.untried_moves.sort(key=lambda m: (abs(m[0] - centro), random.random()))
+            
+            if self.max_children and len(self.untried_moves) > self.max_children:
+                self.untried_moves = self.untried_moves[:self.max_children]
 
 def uct_best_child(node, c=1.414):
     best_score = float('-inf')

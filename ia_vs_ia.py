@@ -1,13 +1,14 @@
 from moves import PopOutBoard
-from mcts5 import mcts
+from mcts6 import get_best_move_mcts
 from ID3_Tree import ID3
 from popout_ID3_Tree import carregar_dataset_jogo
 from collections import Counter
 
 def iniciar_duelo():
-    """Executa o duelo: MCTS (Jogador 1) vs Árvore de Decisão (Jogador 2)"""
+    """Executa o duelo: MCTS6 (Jogador 1) vs Árvore de Decisão (Jogador 2)"""
     board = PopOutBoard()
     
+    print("A carregar dataset e a treinar Árvore de Decisão...")
     data = carregar_dataset_jogo("dataset.csv")
     
     if not data:    
@@ -22,15 +23,25 @@ def iniciar_duelo():
     todas_as_jogadas = [row[-1] for row in data]
     fallback = Counter(todas_as_jogadas).most_common(1)[0][0]
 
-    print("\n=== DUELO: MCTS (X) vs Árvore de Decisão (O) ===")
+    # --- CÁLCULO DE PRECISÃO ---
+    acertos = 0
+    for row in data:
+        features = row[:-1]
+        real = row[-1].strip()
+        if modelo_id3.prever(tree, features, classe_default=fallback) == real:
+            acertos += 1
+    precisao = (acertos / len(data)) * 100
+    print(f"🎯 Precisão da Árvore de Decisão: {precisao:.2f}% ({acertos}/{len(data)} jogadas memorizadas)")
+
+    print("\n=== DUELO: MCTS6 (X) vs Árvore de Decisão (O) ===")
     
     while not board.is_terminal():
         board.display()
         
         if board.current_player == 1:
-            print("MCTS a pensar...")
-            node = mcts(board, iterations=300)
-            move = node.move
+            print("MCTS6 a pensar...")
+            # Atualizado para chamar a nova função paralelizada
+            move = get_best_move_mcts(board, total_iterations=300)
         else:
             print("Árvore de Decisão a decidir...")
             # Prepara os dados para a árvore
@@ -42,20 +53,20 @@ def iniciar_duelo():
                 col_str, tipo = previsao.split('_')
                 move = (int(col_str), tipo)
             else:
-                # Se a árvore falhar, usa MCTS4 rápido
-                print("Aviso: Árvore falhou, a usar MCTS de emergência...")
-                move = mcts(board, iterations=100).move
+                # Se a árvore falhar, usa MCTS6 rápido
+                print("Aviso: Árvore falhou, a usar MCTS6 de emergência...")
+                move = get_best_move_mcts(board, total_iterations=100)
 
             # Verifica se a jogada é legal no PopOut
             if not board.is_valid_move(move[0], move[1]):
-                move = mcts(board, iterations=100).move
+                move = get_best_move_mcts(board, total_iterations=100)
 
         print(f"Jogada: {move}")
         board = board.apply_move(move)
 
     board.display()
     vencedor = board.get_winner()
-    if vencedor == 1: print("VENCEDOR: MCTS!")
+    if vencedor == 1: print("VENCEDOR: MCTS6!")
     elif vencedor == 2: print("VENCEDOR: Árvore de Decisão!")
     else: print("EMPATE!")
     return tree

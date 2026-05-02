@@ -1,5 +1,5 @@
 from moves import PopOutBoard
-from mcts5 import mcts
+from mcts6 import get_best_move_mcts
 from dataset import save_example
 from ID3_Tree import ID3
 from collections import Counter
@@ -61,8 +61,8 @@ def run_terminal():
     board = PopOutBoard()
 
     print("\nModos de Jogo:")
-    print("1- Humano vs MCTS5 | 2- Humano vs Árvore (DT) | 3- MCTS5 vs Árvore")
-    print("4- Humano vs Humano | 5- MCTS5 vs MCTS5")
+    print("1- Humano vs MCTS6 | 2- Humano vs Árvore (DT) | 3- MCTS6 vs Árvore")
+    print("4- Humano vs Humano | 5- MCTS6 vs MCTS6")
     
     while True:
         try:
@@ -78,14 +78,27 @@ def run_terminal():
     # --- INICIALIZAÇÃO DA ÁRVORE (Apenas para modo 2) ---
     tree, modelo_id3, fallback = None, None, None
     if mode == 2:
-        print("A treinar Árvore de Decisão...")
+        print("A ler dataset e a treinar Árvore de Decisão...")
         data = carregar_dataset_jogo("dataset.csv")
         if data:
             modelo_id3 = ID3()
             tree = modelo_id3.construir(data, list(range(len(data[0])-1)))
             fallback = Counter([row[-1] for row in data]).most_common(1)[0][0]
+            
+            # --- CÁLCULO DE PRECISÃO ---
+            print("A avaliar a precisão da Árvore...")
+            acertos = 0
+            for row in data:
+                features = row[:-1]
+                real = row[-1].strip()
+                if modelo_id3.prever(tree, features, classe_default=fallback) == real:
+                    acertos += 1
+            
+            precisao = (acertos / len(data)) * 100
+            print(f"Precisão da Árvore de Decisão: {precisao:.2f}% ({acertos}/{len(data)})\n")
         else:
-            print("Erro: dataset.csv necessário para o modo DT!"); return
+            print("Erro: dataset.csv necessário para o modo DT!")
+            return
 
     forced_draw = False
     
@@ -128,11 +141,12 @@ def run_terminal():
                     c_str, t = previsao.split('_')
                     move = (int(c_str), t)
                 else: 
-                    move = mcts(board, iterations=100).move # Fallback de segurança
+                    # Parâmetro atualizado de 'iterations' para 'total_iterations'
+                    move = get_best_move_mcts(board, total_iterations=1500) 
             else:
-                # Modos 1 e 5 usam MCTS5
-                print(f"IA (MCTS5 - Jogador {board.current_player}) a pensar...")
-                move = mcts(board, iterations=1500).move
+                # Modos 1 e 5 usam MCTS6
+                print(f"IA (MCTS6 - Jogador {board.current_player}) a pensar...")
+                move = get_best_move_mcts(board)
                 save_example(board, move) # Grava dados para treino futuro
 
             if not move or not board.is_valid_move(move[0], move[1]):

@@ -49,45 +49,43 @@ def stratified_split(data, test_size=0.2, seed=42):
     return train_data, test_data
 
 # --- Execução Principal ---
-data = carregar_dataset_jogo("dataset.csv")
+if __name__ == "__main__":
+    data = carregar_dataset_jogo("dataset.csv")
 
-if data:
-    # 1. Split Estratificado diretamente da lista 'data'
-    train_data, test_data = stratified_split(data, test_size=0.2)
+    if data:
+        # 1. Split Estratificado diretamente da lista 'data'
+        train_data, test_data = stratified_split(data, test_size=0.2)
 
-    # 2. Instanciar o modelo
-    modelo_id3 = ID3()
-    
-    # 3. Definir os índices dos atributos (tudo menos a última coluna)
-    num_atributos = len(data[0]) - 1 
-    indices_atributos = list(range(num_atributos)) 
-    
-    # 4. Treino da Árvore Numérica
-    print("A treinar a Árvore de Decisão...")
-    tree_jogo = modelo_id3.construir(train_data, indices_atributos, max_depth=10, min_samples=5)
-    
-    # 5. Descobrir a jogada mais comum para o Plano B
-    todas_as_jogadas = [row[-1] for row in train_data]
-    jogada_mais_comum = Counter(todas_as_jogadas).most_common(1)[0][0]
-
-    print("\nA testar com o conjunto de teste...")
-    acertos = 0
-    for row in test_data:
-        features = row[:-1]
-        real = row[-1].strip()
-
-        # Previsão numérica binária
-        res = modelo_id3.prever(tree_jogo, features, classe_default=jogada_mais_comum)
+        # 2. Instanciar o modelo
+        modelo_id3 = ID3()
         
-        if res == real:
-            acertos += 1
+        # 3. Definir os índices dos atributos (tudo menos a última coluna)
+        num_atributos = len(data[0]) - 1 
+        indices_atributos = list(range(num_atributos)) 
+        
+        # 4. Treino da Árvore Numérica
+        print("A treinar a Árvore de Decisão...")
+        tree_jogo = modelo_id3.construir(train_data, indices_atributos, max_depth=10, min_samples=5)
+        
+        # 5. Descobrir a jogada mais comum para o Plano B
+        todas_as_jogadas = [row[-1] for row in train_data]
+        jogada_mais_comum = Counter(todas_as_jogadas).most_common(1)[0][0]
 
-    print("\n" + "="*45)
-    print(f"Acertos: {acertos} em {len(test_data)} ({acertos/len(test_data)*100:.2f}%)")
-    print("="*45)
-    
-    # Gerar imagem (opcional)
-    # modelo_id3.gerar_imagem_arvore(tree_jogo, "arvore_popout")
-    
-else:
-    print("Erro: dataset.csv não encontrado.")
+        print("\nA testar com o conjunto de teste...")
+        acertos = 0
+        for row in test_data:
+            features = row[:-1]
+            real = row[-1].strip()
+
+            # Previsão numérica binária
+            res = modelo_id3.prever(tree_jogo, features, classe_default=jogada_mais_comum)
+            
+            if res == real:
+                acertos += 1
+
+        print("\n" + "="*45)
+        print(f"Acertos: {acertos} em {len(test_data)} ({acertos/len(test_data)*100:.2f}%)")
+        print("="*45)
+        
+    else:
+        print("Erro: dataset.csv não encontrado.")
