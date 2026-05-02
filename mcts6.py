@@ -3,7 +3,26 @@ import random
 import concurrent.futures
 import os
 
+# Adaptador avançado para tornar o MCTS6 compatível com o simulador E com o gravador de datasets
+class MCTS6Result:
+    def __init__(self, move):
+        self.move = move
 
+    # Permite que o código faça move[0] ou move[1] (usado no dataset.py)
+    def __getitem__(self, index):
+        return self.move[index]
+
+    # Permite que o código use len(move) se necessário
+    def __len__(self):
+        return len(self.move)
+    
+    # Define como o objeto aparece quando é impresso (print)
+    def __repr__(self):
+        return str(self.move)
+
+    def __str__(self):
+        return str(self.move)
+    
 class Node:
     def __init__(self, state, parent=None, move=None, max_children=5):
         self.state = state
@@ -84,14 +103,14 @@ def backpropagate(node, result):
 
 
 # WORKER INDIVIDUAL (Corre num núcleo isolado)
-def mcts_worker(state, safe_moves, iterations, c, max_children):
+def mcts_worker(state, safe_moves, iterationsss, c, max_children):
     root = Node(state=state, max_children=max_children)
     
     # Restringe a raiz apenas às jogadas que não são suicídio imediato
     if safe_moves:
         root.untried_moves = safe_moves[:max_children]
 
-    for _ in range(iterations):
+    for _ in range(iterationsss):
         node = root
         while not node.untried_moves and node.children:
             node = uct_best_child(node, c)
@@ -108,7 +127,7 @@ def mcts_worker(state, safe_moves, iterations, c, max_children):
     return {child.move: child.visits for child in root.children}
 
 # CÉREBRO PRINCIPAL (Paralelização e Reflexos)
-def get_best_move_mcts(state, total_iterations=6000, c=1.414, max_children=5):
+def get_best_move_mcts(state, iterations=6000, c=1.414, max_children=5):
     legal_moves = state.get_legal_moves()
     
     # 1. Reflexos de Sobrevivência (Correm apenas 1x na thread principal)
@@ -118,7 +137,7 @@ def get_best_move_mcts(state, total_iterations=6000, c=1.414, max_children=5):
         
         # Posso ganhar já? Joga e acaba.
         if test_state.get_winner() == state.current_player:
-            return move
+            return MCTS6Result(move)
 
         # O adversário ganha a seguir?
         if test_state.is_terminal() and test_state.get_winner() != state.current_player:
@@ -135,15 +154,15 @@ def get_best_move_mcts(state, total_iterations=6000, c=1.414, max_children=5):
             safe_moves.append(move)
 
     if len(safe_moves) == 1:
-        return safe_moves[0]
+        return MCTS6Result(safe_moves[0])
         
     if not safe_moves:
         # Xeque-mate inevitável, joga algo legal.
-        return random.choice(legal_moves)
+        return MCTS6Result(random.choice(legal_moves))
 
     # 2. Paralelização de Raiz (Root Parallelization)
     num_cores = os.cpu_count() or 4
-    iters_per_core = total_iterations // num_cores
+    iters_per_core = iterations // num_cores
     
     combined_visits = {move: 0 for move in safe_moves}
     
@@ -168,6 +187,6 @@ def get_best_move_mcts(state, total_iterations=6000, c=1.414, max_children=5):
     # Temperatura para gerar diversidade no dataset do ID3 (primeiras jogadas)
     pecas_no_tabuleiro = sum(1 for row in state.board for cell in row if cell != 0)
     if pecas_no_tabuleiro < 6 and len(best_moves) >= 2:
-        return random.choice(best_moves[:2])
+        return MCTS6Result(random.choice(best_moves[:2]))
         
-    return best_moves[0]
+    return MCTS6Result(safe_moves[0])
