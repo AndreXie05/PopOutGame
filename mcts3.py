@@ -1,119 +1,78 @@
-'''Simula a jogada
-Vê todas as respostas do adversário
-Se alguma dá vitória -> Evita essas jogadas'''
-
 import math
 import random
+from rollout_utils import bb_rollout, board_to_bb
 
 
 class Node:
     def __init__(self, state, parent=None, move=None):
-        self.state = state              # estado do jogo neste nó
-        self.parent = parent            # nó pai
-        self.move = move                # jogada que levou a este nó
+        self.state = state
+        self.parent = parent
+        self.move = move
+        self.wins = 0
+        self.visits = 0
+        self.children = []
+        self.untried_moves = state.get_legal_moves()
+        self._p1, self._p2, self._h = board_to_bb(state.board)
 
-        self.children = []              # filhos já expandidos
-        self.wins = 0                   # número de vitórias / reward acumulada
-        self.visits = 0                 # número de visitas
+    def uct_score(self, c):
+        if self.visits == 0:
+            return float('inf')
+        return self.wins / self.visits + c * math.sqrt(math.log(self.parent.visits) / self.visits)
 
-        self.untried_moves = state.get_legal_moves()  # jogadas ainda não exploradas
-
-    def is_fully_expanded(self):
-        return len(self.untried_moves) == 0
-
-    def best_child(self, c=math.sqrt(2)):
-        best_score = -float("inf")
-        best_node = None
-
-        for child in self.children:
-            exploitation = child.wins / child.visits
-            exploration = c * math.sqrt(math.log(self.visits) / child.visits)
-            score = exploitation + exploration
-
-            if score > best_score:
-                best_score = score
-                best_node = child
-
-        return best_node
+    def best_child(self, c):
+        return max(self.children, key=lambda n: n.uct_score(c))
 
     def expand(self):
-        move = random.choice(self.untried_moves)
-        self.untried_moves.remove(move)
-
-        next_state = self.state.apply_move(move)
-        child = Node(next_state, parent=self, move=move)
-
+        move = self.untried_moves.pop()
+        child = Node(self.state.apply_move(move), parent=self, move=move)
         self.children.append(child)
         return child
 
 
-def select(node):
-    while not node.state.is_terminal():
-        if not node.is_fully_expanded():
-            return node
-        else:
-            node = node.best_child()
-    return node
-
-
-def rollout(state):
-    current_state = state
-
-    while not current_state.is_terminal():
-        legal_moves = current_state.get_legal_moves()
-
-        safe_moves = []
-
-        for move in legal_moves:
-            temp_state = current_state.apply_move(move)
-
-            # ver se o adversário ganha logo a seguir
-            opponent_moves = temp_state.get_legal_moves()
-            opponent_wins = False
-
-            for opp_move in opponent_moves:
-                next_state = temp_state.apply_move(opp_move)
-                if next_state.check_four_in_a_row(3 - current_state.current_player):
-                    opponent_wins = True
-                    break
-
-            if not opponent_wins:
-                safe_moves.append(move)
-
-        # usar apenas jogadas seguras se existirem
-        if safe_moves:
-            move = random.choice(safe_moves)
-        else:
-            move = random.choice(legal_moves)
-
-        current_state = current_state.apply_move(move)
-
-    return current_state.get_result(state.current_player)
-
-
 def backpropagate(node, result):
-    while node is not None:
+    result = -result
+    while node:
         node.visits += 1
-        node.wins += result
+        node.wins += (result == 1)
+        result = -result
         node = node.parent
 
 
-def mcts(root_state, iterations=1000):
-    root = Node(root_state)
+def opponent_wins_after(state, move):
+    """Verifica se o adversário pode ganhar imediatamente após a jogada dada."""
+    next_state = state.apply_move(move)
+    return any(
+        next_state.apply_move(opp).get_winner() == next_state.current_player
+        for opp in next_state.get_legal_moves()
+    )
+
+
+def mcts(state, iterations=1000, c=math.sqrt(2)):
+    legal_moves = state.get_legal_moves()
+
+    # Reflexo de ataque: se posso ganhar já, ganho
+    for move in legal_moves:
+        if state.apply_move(move).get_winner() == state.current_player:
+            return Node(state.apply_move(move), move=move)
+
+    # Reflexo de defesa: filtrar jogadas que dão vitória ao adversário a seguir
+    safe_moves = [m for m in legal_moves if not opponent_wins_after(state, m)]
+    candidates = safe_moves if safe_moves else legal_moves
+
+    root = Node(state)
+    root.untried_moves = list(candidates)
 
     for _ in range(iterations):
-        # 1. Selection
-        node = select(root)
+        node = root
 
-        # 2. Expansion
-        if not node.state.is_terminal():
+        while not node.untried_moves and node.children:
+            node = node.best_child(c)
+
+        if node.untried_moves and not node.state.is_terminal():
             node = node.expand()
 
-        # 3. Simulation
-        result = rollout(node.state)
-
-        # 4. Backpropagation
+        result = bb_rollout(node._p1, node._p2, node._h,
+                            node.state.current_player, node.state.last_move)
         backpropagate(node, result)
 
-    # Escolha final: filho da raiz com mais visitas
-    return max(root.children, key=lambda child: child.visits)
+    return max(root.children, key=lambda n: n.visits)

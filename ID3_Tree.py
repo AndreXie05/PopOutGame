@@ -23,7 +23,7 @@ class ID3:
         
         # Se só houver 1 valor, não há divisão possível
         if len(valores) < 2:
-            return -1, valores[0] if valores else 0
+            return -1, None
 
         melhor_ganho = -1
         melhor_thr = 0
@@ -108,8 +108,8 @@ class ID3:
         return arvore
 
     def prever(self, arvore, amostra, classe_default="Desconhecido"):
-        if not isinstance(arvore, dict): 
-            return arvore
+        if not isinstance(arvore, dict):
+            return arvore if arvore is not None else classe_default
         
         # Aceder aos novos campos da árvore
         idx = arvore['indice']

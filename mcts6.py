@@ -1,192 +1,178 @@
+"""
+MCTS v6 — Política heurística de seleção de candidatos.
+
+Inspirado no AlphaGo: antes de iniciar a pesquisa MCTS, uma função de
+política pontua cada jogada candidata e selecciona apenas as K melhores.
+
+Diferença face a v5:
+  v5 → explora até 5 jogadas por ordem de centralidade
+  v6 → pontua TODAS as jogadas seguras por alinhamentos criados/destruídos
+       e explora apenas as top K (padrão K=3)
+
+Vantagem: menos ramos → mais iterações por ramo → estimativas mais precisas.
+A perda é que podemos excluir jogadas boas que a heurística sub-avalia.
+"""
 import math
 import random
-import concurrent.futures
-import os
+from rollout_utils import bb_rollout, board_to_bb, COL_MASKS, BOTTOM_BITS, ROWS, COLS
 
-# Adaptador avançado para tornar o MCTS6 compatível com o simulador E com o gravador de datasets
-class MCTS6Result:
-    def __init__(self, move):
-        self.move = move
 
-    # Permite que o código faça move[0] ou move[1] (usado no dataset.py)
-    def __getitem__(self, index):
-        return self.move[index]
+# ---------------------------------------------------------------------------
+# Funções da política heurística
+# ---------------------------------------------------------------------------
 
-    # Permite que o código use len(move) se necessário
-    def __len__(self):
-        return len(self.move)
-    
-    # Define como o objeto aparece quando é impresso (print)
-    def __repr__(self):
-        return str(self.move)
+def _bb_after_move(p1, p2, h, move, player):
+    """
+    Aplica uma jogada ao bitboard e devolve (p1_novo, p2_novo).
+    Não modifica os argumentos. Não precisa de actualizar heights
+    porque a política só avalia alinhamentos, não validade de jogadas.
+    """
+    col, mtype = move
+    if mtype == 'drop':
+        bit = (ROWS - 1 - h[col]) * COLS + col
+        if player == 1: return p1 | (1 << bit), p2
+        else:           return p1, p2 | (1 << bit)
+    else:   # pop — desloca coluna
+        cm  = COL_MASKS[col]
+        bd  = BOTTOM_BITS[col]
+        p1c = ((p1 & cm & ~bd) << COLS) & cm
+        p2c = ((p2 & cm & ~bd) << COLS) & cm
+        return (p1 & ~cm) | p1c, (p2 & ~cm) | p2c
 
-    def __str__(self):
-        return str(self.move)
-    
+
+def _count_alignments(bb):
+    """
+    Conta formações de 2 e 3 em linha no bitboard (todas as direcções).
+
+    Usa o mesmo truque dos bitboards de vitória: bb & (bb >> k) detecta
+    pares separados por k posições. Uma tripla é um par que continua.
+
+    Pesos: triple vale 4× mais que pair — representa uma ameaça concreta.
+    """
+    score = 0
+    for shift in (1, COLS, COLS + 1, COLS - 1):
+        pairs   = bb & (bb >> shift)
+        triples = pairs & (bb >> (2 * shift))
+        score  += pairs.bit_count() + triples.bit_count() * 4
+    return score
+
+
+def _policy_score(p1, p2, h, move, player):
+    """
+    Pontua uma jogada: alinhamentos criados para mim menos alinhamentos
+    deixados ao adversário (com peso 1.5 — bloquear é ligeiramente mais
+    importante do que atacar).
+    """
+    np1, np2 = _bb_after_move(p1, p2, h, move, player)
+    my_bb  = np1 if player == 1 else np2
+    opp_bb = np2 if player == 1 else np1
+    return _count_alignments(my_bb) - int(_count_alignments(opp_bb) * 1.5)
+
+
+# ---------------------------------------------------------------------------
+# Nó da árvore MCTS
+# ---------------------------------------------------------------------------
+
 class Node:
-    def __init__(self, state, parent=None, move=None, max_children=5):
+    def __init__(self, state, parent=None, move=None):
         self.state = state
         self.parent = parent
         self.move = move
         self.wins = 0
         self.visits = 0
         self.children = []
-        self.max_children = max_children
-        
-        self.untried_moves = state.get_legal_moves()
-        
-        if self.untried_moves:
-            # CORREÇÃO: Foco verdadeiro no centro! 
-            # Ordena por proximidade ao centro (coluna 3) e usa random para desempatar
-            centro = len(state.board[0]) // 2 if state.board else 3
-            self.untried_moves.sort(key=lambda m: (abs(m[0] - centro), random.random()))
-            
-            if self.max_children and len(self.untried_moves) > self.max_children:
-                self.untried_moves = self.untried_moves[:self.max_children]
+        self.untried_moves = []
+        self._p1, self._p2, self._h = board_to_bb(state.board)
 
-def uct_best_child(node, c=1.414):
-    best_score = float('-inf')
-    best_children = []
-    
-    for child in node.children:
-        if child.visits == 0:
-            score = float('inf')
-        else:
-            exploit = child.wins / child.visits
-            explore = math.sqrt(math.log(node.visits) / child.visits)
-            score = exploit + c * explore
-            
-        if score > best_score:
-            best_score = score
-            best_children = [child]
-        elif score == best_score:
-            best_children.append(child)
-            
-    return random.choice(best_children) if best_children else None
+    def uct_score(self, c):
+        if self.visits == 0:
+            return float('inf')
+        return self.wins / self.visits + c * math.sqrt(math.log(self.parent.visits) / self.visits)
 
-def expand(node):
-    if node.untried_moves:
-        move = node.untried_moves.pop(0)
-        next_state = node.state.apply_move(move)
-        child_node = Node(state=next_state, parent=node, move=move, max_children=node.max_children)
-        node.children.append(child_node)
-        return child_node
-    return None
+    def best_child(self, c):
+        return max(self.children, key=lambda n: n.uct_score(c))
 
-def rollout(state):
-    current_state = state
-    while not current_state.is_terminal():
-        legal_moves = current_state.get_legal_moves()
-        winning_move = None
-        
-        for move in legal_moves:
-            test_state = current_state.apply_move(move)
-            if test_state.get_winner() == current_state.current_player:
-                winning_move = move
-                break
-                    
-        if winning_move:
-            current_state = current_state.apply_move(winning_move)
-        else:
-            current_state = current_state.apply_move(random.choice(legal_moves))
-            
-    return current_state.get_result(state.current_player)
+    def expand(self):
+        move = self.untried_moves.pop(0)
+        child = Node(self.state.apply_move(move), parent=self, move=move)
+        self.children.append(child)
+        return child
+
 
 def backpropagate(node, result):
-    result = -result 
-    while node is not None:
+    result = -result
+    while node:
         node.visits += 1
-        if result == 1:
-            node.wins += 1
-        result = -result 
+        node.wins += (result == 1)
+        result = -result
         node = node.parent
 
 
-# WORKER INDIVIDUAL (Corre num núcleo isolado)
-def mcts_worker(state, safe_moves, iterationsss, c, max_children):
-    root = Node(state=state, max_children=max_children)
-    
-    # Restringe a raiz apenas às jogadas que não são suicídio imediato
-    if safe_moves:
-        root.untried_moves = safe_moves[:max_children]
+# ---------------------------------------------------------------------------
+# MCTS com política
+# ---------------------------------------------------------------------------
 
-    for _ in range(iterationsss):
+def mcts(state, iterations=2000, c=1.414, max_candidates=5):
+    """
+    Executa MCTS com pré-selecção de candidatos por heurística.
+
+    Passos:
+      1. Reflexo de ataque (igual a v5)
+      2. Filtro de segurança (igual a v5)
+      3. NOVO — Política: pontua os candidatos seguros e escolhe os K melhores
+      4. MCTS só sobre esses K candidatos
+    """
+    legal = state.get_legal_moves()
+
+    # Reflexo de ataque: vitória imediata não precisa de pesquisa
+    for m in legal:
+        if state.apply_move(m).get_winner() == state.current_player:
+            return Node(state.apply_move(m), move=m)
+
+    # Filtro de segurança
+    safe = []
+    for m in legal:
+        ns = state.apply_move(m)
+        if not any(ns.apply_move(opp).get_winner() == ns.current_player
+                   for opp in ns.get_legal_moves()):
+            safe.append(m)
+    candidates = safe if safe else legal
+
+    # Política: pontua cada candidato e selecciona os K melhores
+    p1, p2, h = board_to_bb(state.board)
+    scored = sorted(
+        candidates,
+        key=lambda m: _policy_score(p1, p2, h, m, state.current_player),
+        reverse=True
+    )
+    top_k = scored[:max_candidates]
+
+    # MCTS apenas sobre os top_k candidatos
+    root = Node(state)
+    root.untried_moves = list(top_k)
+
+    for _ in range(iterations):
         node = root
         while not node.untried_moves and node.children:
-            node = uct_best_child(node, c)
-            
-        if node.untried_moves:
-            new_node = expand(node)
-            if new_node:
-                node = new_node
-                
-        result = rollout(node.state)
+            node = node.best_child(c)
+        if node.untried_moves and not node.state.is_terminal():
+            node = node.expand()
+        result = bb_rollout(node._p1, node._p2, node._h,
+                            node.state.current_player, node.state.last_move)
         backpropagate(node, result)
-        
-    # Retorna um dicionário com os votos: {jogada: numero_de_visitas}
-    return {child.move: child.visits for child in root.children}
 
-# CÉREBRO PRINCIPAL (Paralelização e Reflexos)
-def get_best_move_mcts(state, iterations=6000, c=1.414, max_children=5):
-    legal_moves = state.get_legal_moves()
-    
-    # 1. Reflexos de Sobrevivência (Correm apenas 1x na thread principal)
-    safe_moves = []
-    for move in legal_moves:
-        test_state = state.apply_move(move)
-        
-        # Posso ganhar já? Joga e acaba.
-        if test_state.get_winner() == state.current_player:
-            return MCTS6Result(move)
+    if not root.children:
+        fallback = top_k[0] if top_k else random.choice(legal)
+        return Node(state.apply_move(fallback), move=fallback)
 
-        # O adversário ganha a seguir?
-        if test_state.is_terminal() and test_state.get_winner() != state.current_player:
-            continue
+    best = sorted(root.children, key=lambda n: n.visits, reverse=True)
 
-        opponent_wins_next = False
-        if not test_state.is_terminal():
-            for opp_move in test_state.get_legal_moves():
-                if test_state.apply_move(opp_move).get_winner() == test_state.current_player:
-                    opponent_wins_next = True
-                    break
-                    
-        if not opponent_wins_next:
-            safe_moves.append(move)
+    # Temperatura na abertura
+    pieces = sum(cell != 0 for row in state.board for cell in row)
+    if pieces < 6 and len(best) >= 2:
+        return random.choice(best[:2])
+    return best[0]
 
-    if len(safe_moves) == 1:
-        return MCTS6Result(safe_moves[0])
-        
-    if not safe_moves:
-        # Xeque-mate inevitável, joga algo legal.
-        return MCTS6Result(random.choice(legal_moves))
 
-    # 2. Paralelização de Raiz (Root Parallelization)
-    num_cores = os.cpu_count() or 4
-    iters_per_core = iterations // num_cores
-    
-    combined_visits = {move: 0 for move in safe_moves}
-    
-    # Lança N processos em paralelo
-    with concurrent.futures.ProcessPoolExecutor(max_workers=num_cores) as executor:
-        futures = [
-            executor.submit(mcts_worker, state, safe_moves, iters_per_core, c, max_children)
-            for _ in range(num_cores)
-        ]
-        
-        # Junta os resultados à medida que os núcleos terminam
-        for future in concurrent.futures.as_completed(futures):
-            worker_results = future.result()
-            for move, visits in worker_results.items():
-                if move in combined_visits:
-                    combined_visits[move] += visits
-
-    # 3. Escolhe a jogada mais votada por todos os núcleos
-    # Ordena as jogadas pelo total de visitas (votos)
-    best_moves = sorted(combined_visits.keys(), key=lambda m: combined_visits[m], reverse=True)
-    
-    # Temperatura para gerar diversidade no dataset do ID3 (primeiras jogadas)
-    pecas_no_tabuleiro = sum(1 for row in state.board for cell in row if cell != 0)
-    if pecas_no_tabuleiro < 6 and len(best_moves) >= 2:
-        return MCTS6Result(random.choice(best_moves[:2]))
-        
-    return MCTS6Result(safe_moves[0])
+def get_best_move(state, iterations=2000, c=1.414, max_candidates=5):
+    return mcts(state, iterations, c, max_candidates).move
